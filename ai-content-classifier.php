@@ -3,7 +3,7 @@
  * Plugin Name: AI Content Classifier
  * Plugin URI: https://github.com/ref34t/ai-content-generator
  * Description: Generate SEO-optimized WordPress content using OpenAI's GPT API
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Mo Khaled
  * Author URI: https://mokhaled.dev
  * License: GPL v2 or later
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('AICG_VERSION', '1.1.0');
+define('AICG_VERSION', '1.1.1');
 define('AICG_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('AICG_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('AICG_PLUGIN_BASENAME', plugin_basename(__FILE__));

@@ -3,7 +3,7 @@ Contributors: mokhaled
 Tags: ai, content generator, openai, gpt, seo, content creation, automation
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -89,6 +89,15 @@ Yes, the plugin is compatible with WordPress Multisite installations.
 5. SEO optimization options
 
 == Changelog ==
+
+= 1.1.1 =
+* Critical security fixes for WordPress Plugin Check compliance
+* Fixed 3 critical database query errors with proper $wpdb->prepare() usage
+* Enhanced $_POST nonce validation across all AJAX handlers
+* Comprehensive input validation fixes (50+ warnings resolved)
+* Fixed $_SERVER sanitization for IP address handling
+* Improved template editor security with proper isset() checks
+* Zero critical errors remaining - WordPress.org submission ready
 
 = 1.1.0 =
 * Security hardening - Fixed all WordPress Plugin Check issues
