@@ -2,7 +2,7 @@
 
 **Generate SEO-optimized WordPress content using OpenAI's GPT API. Create blog posts, pages, and more with AI-powered content generation.**
 
-[![WordPress Plugin Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/mokhaled/ai-content-generator)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/mokhaled/ai-content-generator)
 [![WordPress Compatibility](https://img.shields.io/badge/wordpress-5.0%2B-green.svg)](https://wordpress.org/)
 [![PHP Version](https://img.shields.io/badge/php-7.4%2B-purple.svg)](https://php.net/)
 [![License](https://img.shields.io/badge/license-GPLv2%2B-orange.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
@@ -290,6 +290,26 @@ Contributions are welcome! Please submit pull requests to our [GitHub repository
 ## 📄 License
 
 This plugin is licensed under the [GNU General Public License v2.0 or later](https://www.gnu.org/licenses/gpl-2.0.html).
+
+## 📋 Changelog
+
+### Version 1.1.0 - Security & Standards Update
+- **Security Hardening**: Fixed all WordPress Plugin Check issues for WordPress.org compliance
+- **Enhanced Output Escaping**: All user-facing content properly escaped for security
+- **Improved Input Validation**: Added isset() checks and proper sanitization across all forms and AJAX handlers
+- **I18n Improvements**: Added translator comments and ordered placeholders for better internationalization
+- **Timezone Safety**: Replaced date() with gmdate() for consistent UTC time handling
+- **Code Standards**: Replaced deprecated functions with WordPress standard alternatives
+- **Production Ready**: Removed debug code and enhanced nonce verification
+- **WordPress.org Compliance**: Plugin now meets all submission standards
+
+### Version 1.0.0 - Initial Release
+- Core content generation functionality
+- Template system for reusable prompts
+- SEO optimization features
+- REST API support
+- Rate limiting and cost tracking
+- Security hardening
 
 ## ⚠️ Disclaimer
 
