@@ -264,7 +264,7 @@ class AICG_REST_API {
             
             return new WP_REST_Response(array(
                 'success' => false,
-                'error' => __('Internal server error', 'ai-content-generator')
+                'error' => __('Internal server error', 'ai-content-classifier')
             ), 500);
         }
     }
@@ -350,7 +350,7 @@ class AICG_REST_API {
         if ($result === false) {
             return new WP_REST_Response(array(
                 'success' => false,
-                'error' => __('Failed to create template', 'ai-content-generator')
+                'error' => __('Failed to create template', 'ai-content-classifier')
             ), 400);
         }
         
@@ -365,7 +365,7 @@ class AICG_REST_API {
             'success' => true,
             'data' => array(
                 'id' => $template_id,
-                'message' => __('Template created successfully', 'ai-content-generator')
+                'message' => __('Template created successfully', 'ai-content-classifier')
             )
         ), 201);
     }

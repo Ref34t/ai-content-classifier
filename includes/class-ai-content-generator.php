@@ -12,7 +12,7 @@ class AI_Content_Generator {
     private static $hooks_registered = false;
     
     public function __construct() {
-        $this->plugin_name = 'ai-content-generator';
+        $this->plugin_name = 'ai-content-classifier';
         $this->version = AICG_VERSION;
         
         $this->load_dependencies();
@@ -74,7 +74,7 @@ class AI_Content_Generator {
     public function ajax_generate_content() {
         // Verify nonce and user capabilities
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
-            wp_send_json_error(__('Security check failed.', 'ai-content-generator'), 403);
+            wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
 
@@ -122,29 +122,29 @@ class AI_Content_Generator {
      * Build a comprehensive prompt for AI
      */
     private function build_prompt($base_prompt, $content_type, $seo_enabled) {
-        $prompt = __("You are a professional content writer creating {$content_type} content for WordPress.\n\n", 'ai-content-generator');
-        $prompt .= __("Instructions:\n", 'ai-content-generator');
-        $prompt .= __("- Write engaging, well-structured content\n", 'ai-content-generator');
-        $prompt .= __("- Use proper HTML formatting (headings, paragraphs, lists)\n", 'ai-content-generator');
-        $prompt .= __("- Make content scannable and easy to read\n", 'ai-content-generator');
+        $prompt = sprintf(__("You are a professional content writer creating %s content for WordPress.\n\n", 'ai-content-classifier'), $content_type);
+        $prompt .= __("Instructions:\n", 'ai-content-classifier');
+        $prompt .= __("- Write engaging, well-structured content\n", 'ai-content-classifier');
+        $prompt .= __("- Use proper HTML formatting (headings, paragraphs, lists)\n", 'ai-content-classifier');
+        $prompt .= __("- Make content scannable and easy to read\n", 'ai-content-classifier');
         
         if ($seo_enabled) {
-            $prompt .= __("- Optimize for SEO with relevant keywords\n", 'ai-content-generator');
-            $prompt .= __("- Include a meta description (max 160 characters)\n", 'ai-content-generator');
-            $prompt .= __("- Suggest 3-5 focus keywords\n", 'ai-content-generator');
-            $prompt .= __("- Create an SEO-friendly title\n", 'ai-content-generator');
+            $prompt .= __("- Optimize for SEO with relevant keywords\n", 'ai-content-classifier');
+            $prompt .= __("- Include a meta description (max 160 characters)\n", 'ai-content-classifier');
+            $prompt .= __("- Suggest 3-5 focus keywords\n", 'ai-content-classifier');
+            $prompt .= __("- Create an SEO-friendly title\n", 'ai-content-classifier');
         }
         
-        $prompt .= "\n" . __('Content request: ', 'ai-content-generator') . $base_prompt;
-        $prompt .= __("\n\nFormat your response as JSON with the following structure:\n", 'ai-content-generator');
+        $prompt .= "\n" . __('Content request: ', 'ai-content-classifier') . $base_prompt;
+        $prompt .= __("\n\nFormat your response as JSON with the following structure:\n", 'ai-content-classifier');
         $prompt .= "{\n";
-        $prompt .= '  "title": "' . __('Article title', 'ai-content-generator') . '",\n';
-        $prompt .= '  "content": "' . __('Full HTML content', 'ai-content-generator') . '",\n';
+        $prompt .= '  "title": "' . __('Article title', 'ai-content-classifier') . '",\n';
+        $prompt .= '  "content": "' . __('Full HTML content', 'ai-content-classifier') . '",\n';
         
         if ($seo_enabled) {
-            $prompt .= '  "meta_description": "' . __('SEO meta description', 'ai-content-generator') . '",\n';
+            $prompt .= '  "meta_description": "' . __('SEO meta description', 'ai-content-classifier') . '",\n';
             $prompt .= '  "keywords": ["keyword1", "keyword2", "keyword3"],\n';
-            $prompt .= '  "excerpt": "' . __('Brief excerpt for listings', 'ai-content-generator') . '"\n';
+            $prompt .= '  "excerpt": "' . __('Brief excerpt for listings', 'ai-content-classifier') . '"\n';
         }
         
         $prompt .= "}\n";
@@ -201,7 +201,7 @@ class AI_Content_Generator {
         if (preg_match('/<h1[^>]*>(.*?)<\/h1>/i', $content, $matches)) {
             return strip_tags($matches[1]);
         }
-        return __('Untitled', 'ai-content-generator');
+        return __('Untitled', 'ai-content-classifier');
     }
     
     private function clean_content($content) {
@@ -272,7 +272,7 @@ class AI_Content_Generator {
      */
     private function handle_content_generation($prompt, $content_type, $seo_enabled) {
         if (empty($prompt)) {
-            return new WP_Error('prompt_empty', __('Prompt cannot be empty.', 'ai-content-generator'));
+            return new WP_Error('prompt_empty', __('Prompt cannot be empty.', 'ai-content-classifier'));
         }
 
         // Build the prompt
@@ -295,7 +295,7 @@ class AI_Content_Generator {
     public function ajax_save_template() {
         // Verify nonce and user capabilities
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
-            wp_send_json_error(__('Security check failed.', 'ai-content-generator'), 403);
+            wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
         
@@ -303,7 +303,7 @@ class AI_Content_Generator {
         $content = sanitize_textarea_field($_POST['content']);
         
         // Save template logic would go here
-        wp_send_json_success(__('Template saved successfully!', 'ai-content-generator'));
+        wp_send_json_success(__('Template saved successfully!', 'ai-content-classifier'));
     }
     
     /**
@@ -312,14 +312,14 @@ class AI_Content_Generator {
     public function ajax_delete_template() {
         // Verify nonce and user capabilities
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
-            wp_send_json_error(__('Security check failed.', 'ai-content-generator'), 403);
+            wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
         
         $id = intval($_POST['id']);
         
         // Delete template logic would go here
-        wp_send_json_success(__('Template deleted successfully!', 'ai-content-generator'));
+        wp_send_json_success(__('Template deleted successfully!', 'ai-content-classifier'));
     }
     
     /**
@@ -328,7 +328,7 @@ class AI_Content_Generator {
     public function ajax_create_post() {
         // Verify nonce and user capabilities
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
-            wp_send_json_error(__('Security check failed.', 'ai-content-generator'), 403);
+            wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
         
@@ -375,7 +375,7 @@ class AI_Content_Generator {
             'post_id' => $post_id,
             'edit_url' => get_edit_post_link($post_id, 'raw'),
             'view_url' => get_permalink($post_id),
-            'message' => __('Post created successfully!', 'ai-content-generator')
+            'message' => __('Post created successfully!', 'ai-content-classifier')
         ));
     }
 }

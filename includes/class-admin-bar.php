@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin bar integration for quick access to AI Content Generator
+ * Admin bar integration for quick access to AI Content Classifier
  */
 class AICG_Admin_Bar {
     
@@ -43,10 +43,10 @@ class AICG_Admin_Bar {
         // Main menu item
         $wp_admin_bar->add_node(array(
             'id' => 'aicg-main',
-            'title' => '<span class="ab-icon dashicons-edit-large"></span>' . __('AI Content', 'ai-content-generator'),
+            'title' => '<span class="ab-icon dashicons-edit-large"></span>' . __('AI Content', 'ai-content-classifier'),
             'href' => admin_url('admin.php?page=ai-content-generator'),
             'meta' => array(
-                'title' => __('AI Content Generator', 'ai-content-generator')
+                'title' => __('AI Content Classifier', 'ai-content-classifier')
             )
         ));
         
@@ -54,10 +54,10 @@ class AICG_Admin_Bar {
         $wp_admin_bar->add_node(array(
             'id' => 'aicg-quick-generate',
             'parent' => 'aicg-main',
-            'title' => '🚀 ' . __('Quick Generate', 'ai-content-generator'),
+            'title' => '🚀 ' . __('Quick Generate', 'ai-content-classifier'),
             'href' => '#',
             'meta' => array(
-                'title' => __('Generate content quickly', 'ai-content-generator'),
+                'title' => __('Generate content quickly', 'ai-content-classifier'),
                 'class' => 'aicg-quick-generate-trigger'
             )
         ));
@@ -66,10 +66,10 @@ class AICG_Admin_Bar {
         $wp_admin_bar->add_node(array(
             'id' => 'aicg-templates',
             'parent' => 'aicg-main',
-            'title' => '📋 ' . __('Templates', 'ai-content-generator'),
+            'title' => '📋 ' . __('Templates', 'ai-content-classifier'),
             'href' => admin_url('admin.php?page=aicg-templates'),
             'meta' => array(
-                'title' => __('Manage templates', 'ai-content-generator')
+                'title' => __('Manage templates', 'ai-content-classifier')
             )
         ));
         
@@ -83,7 +83,7 @@ class AICG_Admin_Bar {
                     'title' => '• ' . esc_html($template->name),
                     'href' => admin_url('admin.php?page=ai-content-generator&template=' . $template->id),
                     'meta' => array(
-                        'title' => __('Use template: ', 'ai-content-generator') . esc_attr($template->name)
+                        'title' => __('Use template: ', 'ai-content-classifier') . esc_attr($template->name)
                     )
                 ));
             }
@@ -93,10 +93,10 @@ class AICG_Admin_Bar {
         $wp_admin_bar->add_node(array(
             'id' => 'aicg-bulk',
             'parent' => 'aicg-main',
-            'title' => '📦 ' . __('Bulk Operations', 'ai-content-generator'),
+            'title' => '📦 ' . __('Bulk Operations', 'ai-content-classifier'),
             'href' => admin_url('admin.php?page=aicg-bulk'),
             'meta' => array(
-                'title' => __('Bulk content generation', 'ai-content-generator')
+                'title' => __('Bulk content generation', 'ai-content-classifier')
             )
         ));
         
@@ -104,10 +104,10 @@ class AICG_Admin_Bar {
         $wp_admin_bar->add_node(array(
             'id' => 'aicg-stats',
             'parent' => 'aicg-main',
-            'title' => '📊 ' . __('Usage Stats', 'ai-content-generator'),
+            'title' => '📊 ' . __('Usage Stats', 'ai-content-classifier'),
             'href' => '#',
             'meta' => array(
-                'title' => __('View usage statistics', 'ai-content-generator'),
+                'title' => __('View usage statistics', 'ai-content-classifier'),
                 'class' => 'aicg-stats-trigger'
             )
         ));
@@ -117,13 +117,13 @@ class AICG_Admin_Bar {
             'id' => 'aicg-usage-summary',
             'parent' => 'aicg-stats',
             'title' => sprintf(
-                __('Today: %d generations | Cost: $%s', 'ai-content-generator'),
+                __('Today: %d generations | Cost: $%s', 'ai-content-classifier'),
                 $stats['today_generations'],
                 number_format($stats['today_cost'], 3)
             ),
             'href' => admin_url('admin.php?page=aicg-stats'),
             'meta' => array(
-                'title' => __('View detailed statistics', 'ai-content-generator')
+                'title' => __('View detailed statistics', 'ai-content-classifier')
             )
         ));
         
@@ -141,13 +141,13 @@ class AICG_Admin_Bar {
             'id' => 'aicg-cache-status',
             'parent' => 'aicg-stats',
             'title' => sprintf(
-                __('Cache: %d hits (%.1f%%)', 'ai-content-generator'),
+                __('Cache: %d hits (%.1f%%)', 'ai-content-classifier'),
                 $cache_stats['total_hits'],
                 $cache_stats['hit_rate']
             ),
             'href' => admin_url('admin.php?page=aicg-cache'),
             'meta' => array(
-                'title' => __('Cache performance', 'ai-content-generator')
+                'title' => __('Cache performance', 'ai-content-classifier')
             )
         ));
         
@@ -155,10 +155,10 @@ class AICG_Admin_Bar {
         $wp_admin_bar->add_node(array(
             'id' => 'aicg-settings',
             'parent' => 'aicg-main',
-            'title' => '⚙️ ' . __('Settings', 'ai-content-generator'),
+            'title' => '⚙️ ' . __('Settings', 'ai-content-classifier'),
             'href' => admin_url('admin.php?page=aicg-settings'),
             'meta' => array(
-                'title' => __('Plugin settings', 'ai-content-generator')
+                'title' => __('Plugin settings', 'ai-content-classifier')
             )
         ));
         
@@ -171,10 +171,10 @@ class AICG_Admin_Bar {
                 $wp_admin_bar->add_node(array(
                     'id' => 'aicg-enhance-post',
                     'parent' => 'aicg-main',
-                    'title' => '✨ ' . __('Enhance This Post', 'ai-content-generator'),
+                    'title' => '✨ ' . __('Enhance This Post', 'ai-content-classifier'),
                     'href' => '#',
                     'meta' => array(
-                        'title' => __('Enhance current post with AI', 'ai-content-generator'),
+                        'title' => __('Enhance current post with AI', 'ai-content-classifier'),
                         'class' => 'aicg-enhance-post-trigger',
                         'data-post-id' => $post_id
                     )
@@ -223,7 +223,7 @@ class AICG_Admin_Bar {
             var modal = $('<div id=\"aicg-quick-modal\" style=\"position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999999; display: flex; align-items: center; justify-content: center;\"></div>');
             
             var content = $('<div style=\"background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%;\"></div>');
-            content.html('<h2>" . __('Quick Generate', 'ai-content-generator') . "</h2><form id=\"aicg-quick-form\"><textarea id=\"aicg-quick-prompt\" placeholder=\"" . __('Enter your prompt here...', 'ai-content-generator') . "\" style=\"width: 100%; height: 100px; margin-bottom: 10px;\"></textarea><br><button type=\"submit\">" . __('Generate', 'ai-content-generator') . "</button> <button type=\"button\" onclick=\"$(\\\"#aicg-quick-modal\\\").remove()\">" . __('Cancel', 'ai-content-generator') . "</button></form>');
+            content.html('<h2>" . __('Quick Generate', 'ai-content-classifier') . "</h2><form id=\"aicg-quick-form\"><textarea id=\"aicg-quick-prompt\" placeholder=\"" . __('Enter your prompt here...', 'ai-content-classifier') . "\" style=\"width: 100%; height: 100px; margin-bottom: 10px;\"></textarea><br><button type=\"submit\">" . __('Generate', 'ai-content-classifier') . "</button> <button type=\"button\" onclick=\"$(\\\"#aicg-quick-modal\\\").remove()\">" . __('Cancel', 'ai-content-classifier') . "</button></form>');
             
             modal.append(content);
             $('body').append(modal);
@@ -244,10 +244,10 @@ class AICG_Admin_Bar {
                 nonce: '" . wp_create_nonce('aicg_quick_generate') . "'
             }).done(function(response) {
                 if (response.success) {
-                    alert('" . __('Content generated successfully!', 'ai-content-generator') . "');
+                    alert('" . __('Content generated successfully!', 'ai-content-classifier') . "');
                     $('#aicg-quick-modal').remove();
                 } else {
-                    alert('" . __('Error: ', 'ai-content-generator') . "' + response.data);
+                    alert('" . __('Error: ', 'ai-content-classifier') . "' + response.data);
                 }
             });
         }
@@ -262,7 +262,7 @@ class AICG_Admin_Bar {
                     var modal = $('<div id=\"aicg-stats-modal\" style=\"position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999999; display: flex; align-items: center; justify-content: center;\"></div>');
                     
                     var content = $('<div style=\"background: white; padding: 20px; border-radius: 8px; max-width: 400px; width: 90%;\"></div>');
-                    content.html('<h2>" . __('Usage Stats', 'ai-content-generator') . "</h2><ul><li>" . __('Today: ', 'ai-content-generator') . "' + stats.today_generations + ' " . __('generations', 'ai-content-generator') . "</li><li>" . __('This week: ', 'ai-content-generator') . "' + stats.week_generations + ' " . __('generations', 'ai-content-generator') . "</li><li>" . __('Total cost: $', 'ai-content-generator') . "' + stats.total_cost + '</li><li>" . __('Cache hits: ', 'ai-content-generator') . "' + stats.cache_hits + '</li></ul><button onclick=\"$(\\\"#aicg-stats-modal\\\").remove()\">" . __('Close', 'ai-content-generator') . "</button>');
+                    content.html('<h2>" . __('Usage Stats', 'ai-content-classifier') . "</h2><ul><li>" . __('Today: ', 'ai-content-classifier') . "' + stats.today_generations + ' " . __('generations', 'ai-content-classifier') . "</li><li>" . __('This week: ', 'ai-content-classifier') . "' + stats.week_generations + ' " . __('generations', 'ai-content-classifier') . "</li><li>" . __('Total cost: $', 'ai-content-classifier') . "' + stats.total_cost + '</li><li>" . __('Cache hits: ', 'ai-content-classifier') . "' + stats.cache_hits + '</li></ul><button onclick=\"$(\\\"#aicg-stats-modal\\\").remove()\">" . __('Close', 'ai-content-classifier') . "</button>');
                     
                     modal.append(content);
                     $('body').append(modal);
@@ -271,9 +271,9 @@ class AICG_Admin_Bar {
         }
         
         function aicg_enhance_post(postId) {
-            if (confirm('" . __('This will enhance the current post with AI-generated content. Continue?', 'ai-content-generator') . "')) {
+            if (confirm('" . __('This will enhance the current post with AI-generated content. Continue?', 'ai-content-classifier') . "')) {
                 // Implementation would go here
-                alert('" . __('Post enhancement feature coming soon!', 'ai-content-generator') . "');
+                alert('" . __('Post enhancement feature coming soon!', 'ai-content-classifier') . "');
             }
         }
         
@@ -329,17 +329,17 @@ class AICG_Admin_Bar {
      */
     public function ajax_quick_generate() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_quick_generate')) {
-            wp_die(__('Security check failed', 'ai-content-generator'));
+            wp_die(__('Security check failed', 'ai-content-classifier'));
         }
         
         if (!current_user_can('edit_posts')) {
-            wp_die(__('Insufficient permissions', 'ai-content-generator'));
+            wp_die(__('Insufficient permissions', 'ai-content-classifier'));
         }
         
         $prompt = sanitize_textarea_field($_POST['prompt']);
         
         if (empty($prompt)) {
-            wp_send_json_error(__('Prompt is required', 'ai-content-generator'));
+            wp_send_json_error(__('Prompt is required', 'ai-content-classifier'));
         }
         
         try {
@@ -380,7 +380,7 @@ class AICG_Admin_Bar {
      */
     public function ajax_admin_bar_stats() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_admin_bar_stats')) {
-            wp_die(__('Security check failed', 'ai-content-generator'));
+            wp_die(__('Security check failed', 'ai-content-classifier'));
         }
         
         $stats = $this->get_detailed_stats();
@@ -532,8 +532,8 @@ class AICG_Admin_Bar {
      */
     public function add_plugin_action_links($links, $file) {
         if ($file === AICG_PLUGIN_BASENAME) {
-            $settings_link = '<a href="' . admin_url('admin.php?page=aicg-settings') . '">' . __('Settings', 'ai-content-generator') . '</a>';
-            $generate_link = '<a href="' . admin_url('admin.php?page=ai-content-generator') . '">' . __('Generate', 'ai-content-generator') . '</a>';
+            $settings_link = '<a href="' . admin_url('admin.php?page=aicg-settings') . '">' . __('Settings', 'ai-content-classifier') . '</a>';
+            $generate_link = '<a href="' . admin_url('admin.php?page=ai-content-generator') . '">' . __('Generate', 'ai-content-classifier') . '</a>';
             
             array_unshift($links, $settings_link, $generate_link);
         }
@@ -546,9 +546,9 @@ class AICG_Admin_Bar {
      */
     public function add_plugin_meta_links($links, $file) {
         if ($file === AICG_PLUGIN_BASENAME) {
-            $links[] = '<a href="https://github.com/yourusername/ai-content-generator" target="_blank">' . __('GitHub', 'ai-content-generator') . '</a>';
-            $links[] = '<a href="https://wordpress.org/support/plugin/ai-content-generator" target="_blank">' . __('Support', 'ai-content-generator') . '</a>';
-            $links[] = '<a href="https://docs.example.com/ai-content-generator" target="_blank">' . __('Documentation', 'ai-content-generator') . '</a>';
+            $links[] = '<a href="https://github.com/yourusername/ai-content-generator" target="_blank">' . __('GitHub', 'ai-content-classifier') . '</a>';
+            $links[] = '<a href="https://wordpress.org/support/plugin/ai-content-generator" target="_blank">' . __('Support', 'ai-content-classifier') . '</a>';
+            $links[] = '<a href="https://docs.example.com/ai-content-generator" target="_blank">' . __('Documentation', 'ai-content-classifier') . '</a>';
         }
         
         return $links;
@@ -575,15 +575,15 @@ class AICG_Admin_Bar {
         if (strpos($screen_id, 'aicg') !== false) {
             $screen->add_help_tab(array(
                 'id' => 'aicg-quick-help',
-                'title' => __('Quick Help', 'ai-content-generator'),
+                'title' => __('Quick Help', 'ai-content-classifier'),
                 'content' => '
-                    <h3>' . __('AI Content Generator', 'ai-content-generator') . '</h3>
-                    <p>' . __('Use the admin bar menu for quick access to:', 'ai-content-generator') . '</p>
+                    <h3>' . __('AI Content Classifier', 'ai-content-classifier') . '</h3>
+                    <p>' . __('Use the admin bar menu for quick access to:', 'ai-content-classifier') . '</p>
                     <ul>
-                        <li><strong>' . __('Quick Generate:', 'ai-content-generator') . '</strong> ' . __('Generate content with a simple prompt', 'ai-content-generator') . '</li>
-                        <li><strong>' . __('Templates:', 'ai-content-generator') . '</strong> ' . __('Access your saved templates', 'ai-content-generator') . '</li>
-                        <li><strong>' . __('Usage Stats:', 'ai-content-generator') . '</strong> ' . __('View your API usage and costs', 'ai-content-generator') . '</li>
-                        <li><strong>' . __('Settings:', 'ai-content-generator') . '</strong> ' . __('Configure the plugin', 'ai-content-generator') . '</li>
+                        <li><strong>' . __('Quick Generate:', 'ai-content-classifier') . '</strong> ' . __('Generate content with a simple prompt', 'ai-content-classifier') . '</li>
+                        <li><strong>' . __('Templates:', 'ai-content-classifier') . '</strong> ' . __('Access your saved templates', 'ai-content-classifier') . '</li>
+                        <li><strong>' . __('Usage Stats:', 'ai-content-classifier') . '</strong> ' . __('View your API usage and costs', 'ai-content-classifier') . '</li>
+                        <li><strong>' . __('Settings:', 'ai-content-classifier') . '</strong> ' . __('Configure the plugin', 'ai-content-classifier') . '</li>
                     </ul>
                 '
             ));

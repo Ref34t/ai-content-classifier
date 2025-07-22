@@ -1,5 +1,5 @@
 /**
- * Admin JavaScript for AI Content Generator
+ * Admin JavaScript for AI Content Classifier
  */
 
 jQuery(document).ready(function($) {

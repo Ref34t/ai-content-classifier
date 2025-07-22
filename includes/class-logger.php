@@ -1,6 +1,6 @@
 <?php
 /**
- * Comprehensive error logging system for AI Content Generator
+ * Comprehensive error logging system for AI Content Classifier
  */
 class AICG_Logger {
     
@@ -255,9 +255,9 @@ class AICG_Logger {
         
         set_transient($transient_key, true, HOUR_IN_SECONDS);
         
-        $subject = sprintf('[%s] AI Content Generator Critical Error', get_bloginfo('name'));
+        $subject = sprintf('[%s] AI Content Classifier Critical Error', get_bloginfo('name'));
         $body = sprintf(
-            "A critical error occurred in the AI Content Generator plugin:\n\n" .
+            "A critical error occurred in the AI Content Classifier plugin:\n\n" .
             "Level: %s\n" .
             "Message: %s\n" .
             "Time: %s\n" .

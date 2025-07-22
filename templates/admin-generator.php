@@ -20,33 +20,33 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
         <div class="aicg-main-content">
             <div class="postbox">
                 <div class="postbox-header">
-                    <h2><?php _e('Generate Content', 'ai-content-generator'); ?></h2>
+                    <h2><?php _e('Generate Content', 'ai-content-classifier'); ?></h2>
                 </div>
                 <div class="inside">
                     <form id="aicg-generate-form">
                         <table class="form-table">
                             <tr>
                                 <th scope="row">
-                                    <label for="content_type"><?php _e('Content Type', 'ai-content-generator'); ?></label>
+                                    <label for="content_type"><?php _e('Content Type', 'ai-content-classifier'); ?></label>
                                 </th>
                                 <td>
                                     <select name="content_type" id="content_type">
-                                        <option value="post"><?php _e('Blog Post', 'ai-content-generator'); ?></option>
-                                        <option value="page"><?php _e('Page', 'ai-content-generator'); ?></option>
-                                        <option value="product"><?php _e('Product Description', 'ai-content-generator'); ?></option>
-                                        <option value="email"><?php _e('Email', 'ai-content-generator'); ?></option>
-                                        <option value="social"><?php _e('Social Media', 'ai-content-generator'); ?></option>
+                                        <option value="post"><?php _e('Blog Post', 'ai-content-classifier'); ?></option>
+                                        <option value="page"><?php _e('Page', 'ai-content-classifier'); ?></option>
+                                        <option value="product"><?php _e('Product Description', 'ai-content-classifier'); ?></option>
+                                        <option value="email"><?php _e('Email', 'ai-content-classifier'); ?></option>
+                                        <option value="social"><?php _e('Social Media', 'ai-content-classifier'); ?></option>
                                     </select>
                                 </td>
                             </tr>
                             
                             <tr>
                                 <th scope="row">
-                                    <label for="template"><?php _e('Template', 'ai-content-generator'); ?></label>
+                                    <label for="template"><?php _e('Template', 'ai-content-classifier'); ?></label>
                                 </th>
                                 <td>
                                     <select name="template" id="template">
-                                        <option value=""><?php _e('-- Custom Prompt --', 'ai-content-generator'); ?></option>
+                                        <option value=""><?php _e('-- Custom Prompt --', 'ai-content-classifier'); ?></option>
                                         <?php foreach ($templates as $template): ?>
                                             <option value="<?php echo esc_attr($template->id); ?>" 
                                                     data-prompt="<?php echo esc_attr($template->prompt); ?>">
@@ -59,31 +59,31 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
                             
                             <tr>
                                 <th scope="row">
-                                    <label for="prompt"><?php _e('Prompt', 'ai-content-generator'); ?></label>
+                                    <label for="prompt"><?php _e('Prompt', 'ai-content-classifier'); ?></label>
                                 </th>
                                 <td>
                                     <textarea name="prompt" 
                                               id="prompt" 
                                               rows="6" 
                                               class="large-text"
-                                              placeholder="<?php esc_attr_e('Describe what content you want to generate...', 'ai-content-generator'); ?>"></textarea>
+                                              placeholder="<?php esc_attr_e('Describe what content you want to generate...', 'ai-content-classifier'); ?>"></textarea>
                                     <p class="description">
-                                        <?php _e('Be specific about topic, tone, length, and any key points to include.', 'ai-content-generator'); ?>
+                                        <?php _e('Be specific about topic, tone, length, and any key points to include.', 'ai-content-classifier'); ?>
                                     </p>
                                 </td>
                             </tr>
                             
                             <tr>
-                                <th scope="row"><?php _e('Options', 'ai-content-generator'); ?></th>
+                                <th scope="row"><?php _e('Options', 'ai-content-classifier'); ?></th>
                                 <td>
                                     <label>
                                         <input type="checkbox" name="seo_enabled" id="seo_enabled" checked>
-                                        <?php _e('Generate SEO metadata', 'ai-content-generator'); ?>
+                                        <?php _e('Generate SEO metadata', 'ai-content-classifier'); ?>
                                     </label>
                                     <br>
                                     <label>
                                         <input type="checkbox" name="auto_save" id="auto_save">
-                                        <?php _e('Auto-save as draft', 'ai-content-generator'); ?>
+                                        <?php _e('Auto-save as draft', 'ai-content-classifier'); ?>
                                     </label>
                                 </td>
                             </tr>
@@ -91,7 +91,7 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
                         
                         <p class="submit">
                             <button type="submit" class="button button-primary" id="generate-btn">
-                                <?php _e('Generate Content', 'ai-content-generator'); ?>
+                                <?php _e('Generate Content', 'ai-content-classifier'); ?>
                             </button>
                             <span class="spinner" style="float: none;"></span>
                         </p>
@@ -103,7 +103,7 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
             <div id="aicg-results" style="display: none;">
                 <div class="postbox">
                     <div class="postbox-header">
-                        <h2><?php _e('Generated Content', 'ai-content-generator'); ?></h2>
+                        <h2><?php _e('Generated Content', 'ai-content-classifier'); ?></h2>
                     </div>
                     <div class="inside">
                         <div id="result-content">
@@ -112,13 +112,13 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
                         
                         <div class="aicg-actions">
                             <button class="button button-primary" id="create-post-btn">
-                                <?php _e('Create Post', 'ai-content-generator'); ?>
+                                <?php _e('Create Post', 'ai-content-classifier'); ?>
                             </button>
                             <button class="button" id="copy-content-btn">
-                                <?php _e('Copy Content', 'ai-content-generator'); ?>
+                                <?php _e('Copy Content', 'ai-content-classifier'); ?>
                             </button>
                             <button class="button" id="regenerate-btn">
-                                <?php _e('Regenerate', 'ai-content-generator'); ?>
+                                <?php _e('Regenerate', 'ai-content-classifier'); ?>
                             </button>
                         </div>
                     </div>
@@ -127,20 +127,20 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
                 <!-- SEO Results -->
                 <div id="seo-results" class="postbox" style="display: none;">
                     <div class="postbox-header">
-                        <h2><?php _e('SEO Metadata', 'ai-content-generator'); ?></h2>
+                        <h2><?php _e('SEO Metadata', 'ai-content-classifier'); ?></h2>
                     </div>
                     <div class="inside">
                         <table class="form-table">
                             <tr>
-                                <th><?php _e('Meta Description', 'ai-content-generator'); ?></th>
+                                <th><?php _e('Meta Description', 'ai-content-classifier'); ?></th>
                                 <td><span id="meta-description"></span></td>
                             </tr>
                             <tr>
-                                <th><?php _e('Keywords', 'ai-content-generator'); ?></th>
+                                <th><?php _e('Keywords', 'ai-content-classifier'); ?></th>
                                 <td><span id="keywords"></span></td>
                             </tr>
                             <tr>
-                                <th><?php _e('Excerpt', 'ai-content-generator'); ?></th>
+                                <th><?php _e('Excerpt', 'ai-content-classifier'); ?></th>
                                 <td><span id="excerpt"></span></td>
                             </tr>
                         </table>
@@ -153,26 +153,26 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
         <div class="aicg-sidebar">
             <div class="postbox">
                 <div class="postbox-header">
-                    <h2><?php _e('Quick Tips', 'ai-content-generator'); ?></h2>
+                    <h2><?php _e('Quick Tips', 'ai-content-classifier'); ?></h2>
                 </div>
                 <div class="inside">
-                    <h4><?php _e('Effective Prompts:', 'ai-content-generator'); ?></h4>
+                    <h4><?php _e('Effective Prompts:', 'ai-content-classifier'); ?></h4>
                     <ul>
-                        <li><?php _e('Be specific about your topic', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Mention target audience', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Specify desired tone (professional, casual, etc.)', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Include key points to cover', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Mention desired length', 'ai-content-generator'); ?></li>
+                        <li><?php _e('Be specific about your topic', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Mention target audience', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Specify desired tone (professional, casual, etc.)', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Include key points to cover', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Mention desired length', 'ai-content-classifier'); ?></li>
                     </ul>
                     
-                    <h4><?php _e('Example Prompts:', 'ai-content-generator'); ?></h4>
+                    <h4><?php _e('Example Prompts:', 'ai-content-classifier'); ?></h4>
                     <p><em>"Write a 1000-word blog post about the benefits of remote work for software developers. Include statistics, pros and cons, and tips for staying productive. Use a professional but conversational tone."</em></p>
                 </div>
             </div>
             
             <div class="postbox">
                 <div class="postbox-header">
-                    <h2><?php _e('Usage Stats', 'ai-content-generator'); ?></h2>
+                    <h2><?php _e('Usage Stats', 'ai-content-classifier'); ?></h2>
                 </div>
                 <div class="inside">
                     <?php
@@ -206,9 +206,9 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
                         $tokens = 0;
                     }
                     ?>
-                    <p><?php _e('Content generated today:', 'ai-content-generator'); ?> <strong><?php echo $generations; ?></strong></p>
-                    <p><?php _e('Estimated cost:', 'ai-content-generator'); ?> <strong>$<?php echo number_format($cost, 3); ?></strong></p>
-                    <p><?php _e('Tokens used:', 'ai-content-generator'); ?> <strong><?php echo number_format($tokens); ?></strong></p>
+                    <p><?php _e('Content generated today:', 'ai-content-classifier'); ?> <strong><?php echo $generations; ?></strong></p>
+                    <p><?php _e('Estimated cost:', 'ai-content-classifier'); ?> <strong>$<?php echo number_format($cost, 3); ?></strong></p>
+                    <p><?php _e('Tokens used:', 'ai-content-classifier'); ?> <strong><?php echo number_format($tokens); ?></strong></p>
                 </div>
             </div>
         </div>

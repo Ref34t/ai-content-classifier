@@ -22,7 +22,7 @@ class AICG_Secure_Storage {
         
         // Validate API key format
         if (!$this->validate_api_key_format($api_key)) {
-            $this->logger->error(__('Invalid API key format provided', 'ai-content-generator'));
+            $this->logger->error(__('Invalid API key format provided', 'ai-content-classifier'));
             return false;
         }
         
@@ -30,7 +30,7 @@ class AICG_Secure_Storage {
         $encrypted_key = $this->encrypt_data($api_key);
         
         if ($encrypted_key === false) {
-            $this->logger->error(__('Failed to encrypt API key', 'ai-content-generator'));
+            $this->logger->error(__('Failed to encrypt API key', 'ai-content-classifier'));
             return false;
         }
         
@@ -38,11 +38,11 @@ class AICG_Secure_Storage {
         $result = update_option('aicg_api_key_encrypted', $encrypted_key);
         
         if ($result) {
-            $this->logger->info(__('API key stored successfully (encrypted)', 'ai-content-generator'));
+            $this->logger->info(__('API key stored successfully (encrypted)', 'ai-content-classifier'));
             // Remove any old unencrypted keys
             delete_option('aicg_api_key');
         } else {
-            $this->logger->error(__('Failed to store encrypted API key', 'ai-content-generator'));
+            $this->logger->error(__('Failed to store encrypted API key', 'ai-content-classifier'));
         }
         
         return $result;
@@ -59,7 +59,7 @@ class AICG_Secure_Storage {
             $decrypted_key = $this->decrypt_data($encrypted_key);
             
             if ($decrypted_key === false) {
-                $this->logger->error(__('Failed to decrypt API key', 'ai-content-generator'));
+                $this->logger->error(__('Failed to decrypt API key', 'ai-content-classifier'));
                 return false;
             }
             
@@ -69,7 +69,7 @@ class AICG_Secure_Storage {
         // Fallback to old unencrypted key (for migration)
         $old_key = get_option('aicg_api_key');
         if ($old_key) {
-            $this->logger->warning(__('Found unencrypted API key, migrating to encrypted storage', 'ai-content-generator'));
+            $this->logger->warning(__('Found unencrypted API key, migrating to encrypted storage', 'ai-content-classifier'));
             
             // Migrate to encrypted storage
             if ($this->store_api_key($old_key)) {

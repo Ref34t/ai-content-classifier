@@ -1,6 +1,6 @@
 <?php
 /**
- * Autoloader for AI Content Generator plugin classes
+ * Autoloader for AI Content Classifier plugin classes
  */
 class AICG_Autoloader {
     

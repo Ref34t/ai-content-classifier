@@ -40,14 +40,14 @@ class AICG_Settings {
         // Add settings sections
         add_settings_section(
             'aicg_api_settings',
-            __('API Settings', 'ai-content-generator'),
+            __('API Settings', 'ai-content-classifier'),
             array($this, 'api_settings_callback'),
             'aicg_settings'
         );
         
         add_settings_section(
             'aicg_generation_settings',
-            __('Content Generation Settings', 'ai-content-generator'),
+            __('Content Generation Settings', 'ai-content-classifier'),
             array($this, 'generation_settings_callback'),
             'aicg_settings'
         );
@@ -55,7 +55,7 @@ class AICG_Settings {
         // Add settings fields
         add_settings_field(
             'aicg_api_key',
-            __('OpenAI API Key', 'ai-content-generator'),
+            __('OpenAI API Key', 'ai-content-classifier'),
             array($this, 'api_key_field_callback'),
             'aicg_settings',
             'aicg_api_settings'
@@ -63,7 +63,7 @@ class AICG_Settings {
         
         add_settings_field(
             'aicg_model',
-            __('AI Model', 'ai-content-generator'),
+            __('AI Model', 'ai-content-classifier'),
             array($this, 'model_field_callback'),
             'aicg_settings',
             'aicg_api_settings'
@@ -71,7 +71,7 @@ class AICG_Settings {
         
         add_settings_field(
             'aicg_max_tokens',
-            __('Max Tokens', 'ai-content-generator'),
+            __('Max Tokens', 'ai-content-classifier'),
             array($this, 'max_tokens_field_callback'),
             'aicg_settings',
             'aicg_generation_settings'
@@ -79,7 +79,7 @@ class AICG_Settings {
         
         add_settings_field(
             'aicg_temperature',
-            __('Temperature (Creativity)', 'ai-content-generator'),
+            __('Temperature (Creativity)', 'ai-content-classifier'),
             array($this, 'temperature_field_callback'),
             'aicg_settings',
             'aicg_generation_settings'
@@ -87,7 +87,7 @@ class AICG_Settings {
         
         add_settings_field(
             'aicg_default_language',
-            __('Default Language', 'ai-content-generator'),
+            __('Default Language', 'ai-content-classifier'),
             array($this, 'language_field_callback'),
             'aicg_settings',
             'aicg_generation_settings'
@@ -106,11 +106,11 @@ class AICG_Settings {
      * Section callbacks
      */
     public function api_settings_callback() {
-        echo '<p>' . __('Configure your OpenAI API settings.', 'ai-content-generator') . '</p>';
+        echo '<p>' . __('Configure your OpenAI API settings.', 'ai-content-classifier') . '</p>';
     }
     
     public function generation_settings_callback() {
-        echo '<p>' . __('Customize how content is generated.', 'ai-content-generator') . '</p>';
+        echo '<p>' . __('Customize how content is generated.', 'ai-content-classifier') . '</p>';
     }
     
     /**
@@ -126,7 +126,7 @@ class AICG_Settings {
                class="regular-text"
                placeholder="sk-..." />
         <p class="description">
-            <?php _e('Get your API key from', 'ai-content-generator'); ?> 
+            <?php _e('Get your API key from', 'ai-content-classifier'); ?> 
             <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI</a>
         </p>
         <?php
@@ -146,7 +146,7 @@ class AICG_Settings {
             <?php endforeach; ?>
         </select>
         <p class="description">
-            <?php _e('Choose the AI model to use for content generation.', 'ai-content-generator'); ?>
+            <?php _e('Choose the AI model to use for content generation.', 'ai-content-classifier'); ?>
         </p>
         <?php
     }
@@ -162,7 +162,7 @@ class AICG_Settings {
                max="8000" 
                step="100" />
         <p class="description">
-            <?php _e('Maximum number of tokens to generate (1 token ≈ 0.75 words).', 'ai-content-generator'); ?>
+            <?php _e('Maximum number of tokens to generate (1 token ≈ 0.75 words).', 'ai-content-classifier'); ?>
         </p>
         <?php
     }
@@ -179,7 +179,7 @@ class AICG_Settings {
                step="0.1" />
         <span id="temp_value"><?php echo esc_html($value); ?></span>
         <p class="description">
-            <?php _e('Lower values = more focused, higher values = more creative.', 'ai-content-generator'); ?>
+            <?php _e('Lower values = more focused, higher values = more creative.', 'ai-content-classifier'); ?>
         </p>
         <?php
     }
@@ -208,7 +208,7 @@ class AICG_Settings {
             <?php endforeach; ?>
         </select>
         <p class="description">
-            <?php _e('Default language for content generation.', 'ai-content-generator'); ?>
+            <?php _e('Default language for content generation.', 'ai-content-classifier'); ?>
         </p>
         <?php
     }

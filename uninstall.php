@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall script for AI Content Generator plugin
+ * Uninstall script for AI Content Classifier plugin
  * 
  * This file is called when the plugin is deleted from WordPress admin
  * It removes all plugin data including options, database tables, and cached data
@@ -116,7 +116,7 @@ if ($roles) {
 }
 
 // Log the uninstall action
-error_log('AI Content Generator plugin uninstalled successfully at ' . current_time('mysql'));
+error_log('AI Content Classifier plugin uninstalled successfully at ' . current_time('mysql'));
 
 // Final cleanup - remove any remaining plugin traces
 $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'aicg_%'");

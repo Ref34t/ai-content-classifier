@@ -1,8 +1,8 @@
-=== AI Content Generator ===
+=== AI Content Classifier ===
 Contributors: mokhaled
 Tags: ai, content generator, openai, gpt, seo, content creation, automation
 Requires at least: 5.0
-Tested up to: 6.4
+Tested up to: 6.8
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -12,7 +12,7 @@ Generate SEO-optimized WordPress content using OpenAI's GPT API. Create blog pos
 
 == Description ==
 
-AI Content Generator is a powerful WordPress plugin that leverages OpenAI's GPT models to help you create high-quality, SEO-optimized content directly from your WordPress dashboard.
+AI Content Classifier is a powerful WordPress plugin that leverages OpenAI's GPT models to help you create high-quality, SEO-optimized content directly from your WordPress dashboard.
 
 = Key Features =
 
@@ -48,7 +48,7 @@ The plugin only sends data to OpenAI when you explicitly request content generat
 
 1. Upload the plugin files to the `/wp-content/plugins/ai-content-generator` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Use the Settings->AI Content Generator screen to configure the plugin
+3. Use the Settings->AI Content Classifier screen to configure the plugin
 4. Add your OpenAI API key (Get one at https://platform.openai.com)
 
 == Frequently Asked Questions ==
@@ -103,7 +103,7 @@ Yes, the plugin is compatible with WordPress Multisite installations.
 == Upgrade Notice ==
 
 = 1.0.0 =
-First release of AI Content Generator plugin.
+First release of AI Content Classifier plugin.
 
 == Privacy Policy ==
 

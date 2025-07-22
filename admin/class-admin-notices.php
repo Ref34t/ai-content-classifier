@@ -304,7 +304,7 @@ class AICG_Admin_Notices {
     public function add_activation_notice() {
         $this->add_success(
             'aicg_activated',
-            'AI Content Generator has been activated successfully! <a href="' . admin_url('admin.php?page=aicg-settings') . '">Configure your OpenAI API key</a> to get started.',
+            'AI Content Classifier has been activated successfully! <a href="' . admin_url('admin.php?page=aicg-settings') . '">Configure your OpenAI API key</a> to get started.',
             true
         );
     }
@@ -319,7 +319,7 @@ class AICG_Admin_Notices {
         if (empty($api_key)) {
             $this->add_warning(
                 'aicg_api_key_missing',
-                'AI Content Generator requires an OpenAI API key to function. <a href="' . admin_url('admin.php?page=aicg-settings') . '">Configure your API key</a>.',
+                'AI Content Classifier requires an OpenAI API key to function. <a href="' . admin_url('admin.php?page=aicg-settings') . '">Configure your API key</a>.',
                 true
             );
         }
@@ -393,7 +393,7 @@ class AICG_Admin_Notices {
      * Add update notice
      */
     public function add_update_notice($version, $changelog_url = null) {
-        $message = "AI Content Generator has been updated to version {$version}.";
+        $message = "AI Content Classifier has been updated to version {$version}.";
         
         if ($changelog_url) {
             $message .= " <a href='{$changelog_url}' target='_blank'>View changelog</a>.";

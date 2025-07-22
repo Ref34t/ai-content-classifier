@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: AI Content Generator
+ * Plugin Name: AI Content Classifier
  * Plugin URI: https://github.com/ref34t/ai-content-generator
  * Description: Generate SEO-optimized WordPress content using OpenAI's GPT API
  * Version: 1.0.0
  * Author: Mo Khaled
  * Author URI: https://mokhaled.dev
  * License: GPL v2 or later
- * Text Domain: ai-content-generator
+ * Text Domain: ai-content-classifier
  */
 
 // Prevent direct access
@@ -53,7 +53,7 @@ add_action('plugins_loaded', 'aicg_init');
 // Plugin action links
 add_filter('plugin_action_links_' . AICG_PLUGIN_BASENAME, 'aicg_plugin_action_links');
 function aicg_plugin_action_links($links) {
-    $settings_link = '<a href="' . admin_url('admin.php?page=aicg-settings') . '">' . __('Settings', 'ai-content-generator') . '</a>';
+    $settings_link = '<a href="' . admin_url('admin.php?page=aicg-settings') . '">' . __('Settings', 'ai-content-classifier') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 }
@@ -62,8 +62,8 @@ function aicg_plugin_action_links($links) {
 add_filter('plugin_row_meta', 'aicg_plugin_meta_links', 10, 2);
 function aicg_plugin_meta_links($links, $file) {
     if ($file === AICG_PLUGIN_BASENAME) {
-        $links[] = '<a href="' . admin_url('admin.php?page=ai-content-generator') . '">' . __('Generate Content', 'ai-content-generator') . '</a>';
-        $links[] = '<a href="https://github.com/ref34t/ai-content-generator" target="_blank">' . __('GitHub', 'ai-content-generator') . '</a>';
+        $links[] = '<a href="' . admin_url('admin.php?page=ai-content-generator') . '">' . __('Generate Content', 'ai-content-classifier') . '</a>';
+        $links[] = '<a href="https://github.com/ref34t/ai-content-generator" target="_blank">' . __('GitHub', 'ai-content-classifier') . '</a>';
     }
     return $links;
 }

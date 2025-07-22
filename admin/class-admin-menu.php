@@ -23,10 +23,10 @@ class AICG_Admin_Menu {
         
         // Main menu
         add_menu_page(
-            __('AI Content Generator', 'ai-content-generator'),
-            __('AI Content', 'ai-content-generator'),
+            __('AI Content Classifier', 'ai-content-classifier'),
+            __('AI Content', 'ai-content-classifier'),
             'edit_posts',
-            'ai-content-generator',
+            'ai-content-classifier',
             array($this, 'display_generator_page'),
             'dashicons-edit-large',
             30
@@ -34,18 +34,18 @@ class AICG_Admin_Menu {
         
         // Submenu pages
         add_submenu_page(
-            'ai-content-generator',
-            __('Templates', 'ai-content-generator'),
-            __('Templates', 'ai-content-generator'),
+            'ai-content-classifier',
+            __('Templates', 'ai-content-classifier'),
+            __('Templates', 'ai-content-classifier'),
             'edit_posts',
             'aicg-templates',
             array($this, 'display_templates_page')
         );
         
         add_submenu_page(
-            'ai-content-generator',
-            __('Settings', 'ai-content-generator'),
-            __('Settings', 'ai-content-generator'),
+            'ai-content-classifier',
+            __('Settings', 'ai-content-classifier'),
+            __('Settings', 'ai-content-classifier'),
             'manage_options',
             'aicg-settings',
             array($this, 'display_settings_page')
@@ -57,7 +57,7 @@ class AICG_Admin_Menu {
      */
     public function enqueue_scripts($hook) {
         // Only load on our plugin pages
-        if (strpos($hook, 'ai-content-generator') === false && strpos($hook, 'aicg-') === false) {
+        if (strpos($hook, 'ai-content-classifier') === false && strpos($hook, 'aicg-') === false) {
             return;
         }
         
@@ -83,9 +83,9 @@ class AICG_Admin_Menu {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('aicg_generate_nonce'),
             'strings' => array(
-                'generating' => __('Generating content...', 'ai-content-generator'),
-                'error' => __('An error occurred', 'ai-content-generator'),
-                'success' => __('Content generated successfully!', 'ai-content-generator')
+                'generating' => __('Generating content...', 'ai-content-classifier'),
+                'error' => __('An error occurred', 'ai-content-classifier'),
+                'success' => __('Content generated successfully!', 'ai-content-classifier')
             )
         ));
     }

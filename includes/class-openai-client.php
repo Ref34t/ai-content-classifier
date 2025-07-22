@@ -23,7 +23,7 @@ class OpenAI_Client {
      */
     public function generate_completion($prompt, $options = array()) {
         if (empty($this->api_key)) {
-            return new WP_Error('no_api_key', __('OpenAI API key is not configured', 'ai-content-generator'));
+            return new WP_Error('no_api_key', __('OpenAI API key is not configured', 'ai-content-classifier'));
         }
         
         // Merge options with defaults
@@ -82,7 +82,7 @@ class OpenAI_Client {
         $data = json_decode($response_body, true);
         
         if (!isset($data['choices'][0]['message']['content'])) {
-            return new WP_Error('invalid_response', __('Invalid response from OpenAI API', 'ai-content-generator'));
+            return new WP_Error('invalid_response', __('Invalid response from OpenAI API', 'ai-content-classifier'));
         }
         
         $content = $data['choices'][0]['message']['content'];
@@ -119,7 +119,7 @@ class OpenAI_Client {
      */
     public function generate_embeddings($text) {
         if (empty($this->api_key)) {
-            return new WP_Error('no_api_key', __('OpenAI API key is not configured', 'ai-content-generator'));
+            return new WP_Error('no_api_key', __('OpenAI API key is not configured', 'ai-content-classifier'));
         }
         
         $response = wp_remote_post('https://api.openai.com/v1/embeddings', array(
@@ -142,7 +142,7 @@ class OpenAI_Client {
         $data = json_decode($response_body, true);
         
         if (!isset($data['data'][0]['embedding'])) {
-            return new WP_Error('invalid_response', __('Invalid embeddings response', 'ai-content-generator'));
+            return new WP_Error('invalid_response', __('Invalid embeddings response', 'ai-content-classifier'));
         }
         
         return $data['data'][0]['embedding'];
@@ -187,10 +187,10 @@ class OpenAI_Client {
      */
     public function get_available_models() {
         return array(
-            'gpt-3.5-turbo' => __('GPT-3.5 Turbo (Fast & Affordable)', 'ai-content-generator'),
-            'gpt-3.5-turbo-16k' => __('GPT-3.5 Turbo 16K (Longer Context)', 'ai-content-generator'),
-            'gpt-4' => __('GPT-4 (Most Capable)', 'ai-content-generator'),
-            'gpt-4-turbo-preview' => __('GPT-4 Turbo (Latest)', 'ai-content-generator'),
+            'gpt-3.5-turbo' => __('GPT-3.5 Turbo (Fast & Affordable)', 'ai-content-classifier'),
+            'gpt-3.5-turbo-16k' => __('GPT-3.5 Turbo 16K (Longer Context)', 'ai-content-classifier'),
+            'gpt-4' => __('GPT-4 (Most Capable)', 'ai-content-classifier'),
+            'gpt-4-turbo-preview' => __('GPT-4 Turbo (Latest)', 'ai-content-classifier'),
         );
     }
     

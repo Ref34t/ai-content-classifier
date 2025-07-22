@@ -56,7 +56,7 @@ class AICG_Security {
         if (count($requests) >= $rate_limit) {
             wp_die(json_encode(array(
                 'success' => false,
-                'data' => __('Rate limit exceeded. Please try again later.', 'ai-content-generator')
+                'data' => __('Rate limit exceeded. Please try again later.', 'ai-content-classifier')
             )));
         }
         
@@ -169,7 +169,7 @@ class AICG_Security {
     public function add_security_headers() {
         // Only on our plugin pages
         $screen = get_current_screen();
-        if (!$screen || strpos($screen->id, 'ai-content-generator') === false) {
+        if (!$screen || strpos($screen->id, 'ai-content-classifier') === false) {
             return;
         }
         

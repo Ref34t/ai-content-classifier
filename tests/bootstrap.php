@@ -17,5 +17,5 @@ if (!defined('ABSPATH')) {
 }
 
 // Load the plugin
-require_once dirname(__DIR__) . '/ai-content-generator.php';
+require_once dirname(__DIR__) . '/ai-content-classifier.php';
 

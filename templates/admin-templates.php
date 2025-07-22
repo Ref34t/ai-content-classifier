@@ -33,11 +33,11 @@ if (isset($_POST['action'])) {
                 );
                 
                 if ($result) {
-                    echo '<div class="notice notice-success"><p>' . __('Template created successfully!', 'ai-content-generator') . '</p></div>';
+                    echo '<div class="notice notice-success"><p>' . __('Template created successfully!', 'ai-content-classifier') . '</p></div>';
                     // Refresh templates list
                     $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
                 } else {
-                    echo '<div class="notice notice-error"><p>' . __('Failed to create template.', 'ai-content-generator') . '</p></div>';
+                    echo '<div class="notice notice-error"><p>' . __('Failed to create template.', 'ai-content-classifier') . '</p></div>';
                 }
             }
             break;
@@ -51,11 +51,11 @@ if (isset($_POST['action'])) {
                 );
                 
                 if ($result) {
-                    echo '<div class="notice notice-success"><p>' . __('Template deleted successfully!', 'ai-content-generator') . '</p></div>';
+                    echo '<div class="notice notice-success"><p>' . __('Template deleted successfully!', 'ai-content-classifier') . '</p></div>';
                     // Refresh templates list
                     $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
                 } else {
-                    echo '<div class="notice notice-error"><p>' . __('Failed to delete template.', 'ai-content-generator') . '</p></div>';
+                    echo '<div class="notice notice-error"><p>' . __('Failed to delete template.', 'ai-content-classifier') . '</p></div>';
                 }
             }
             break;
@@ -71,7 +71,7 @@ if (isset($_POST['action'])) {
             <!-- Create new template -->
             <div class="postbox">
                 <div class="postbox-header">
-                    <h2><?php _e('Create New Template', 'ai-content-generator'); ?></h2>
+                    <h2><?php _e('Create New Template', 'ai-content-classifier'); ?></h2>
                 </div>
                 <div class="inside">
                     <form method="post" action="">
@@ -81,7 +81,7 @@ if (isset($_POST['action'])) {
                         <table class="form-table">
                             <tr>
                                 <th scope="row">
-                                    <label for="template_name"><?php _e('Template Name', 'ai-content-generator'); ?></label>
+                                    <label for="template_name"><?php _e('Template Name', 'ai-content-classifier'); ?></label>
                                 </th>
                                 <td>
                                     <input type="text" 
@@ -89,28 +89,28 @@ if (isset($_POST['action'])) {
                                            name="template_name" 
                                            class="regular-text" 
                                            required 
-                                           placeholder="<?php esc_attr_e('e.g., Blog Post - How To Guide', 'ai-content-generator'); ?>" />
+                                           placeholder="<?php esc_attr_e('e.g., Blog Post - How To Guide', 'ai-content-classifier'); ?>" />
                                 </td>
                             </tr>
                             
                             <tr>
                                 <th scope="row">
-                                    <label for="content_type"><?php _e('Content Type', 'ai-content-generator'); ?></label>
+                                    <label for="content_type"><?php _e('Content Type', 'ai-content-classifier'); ?></label>
                                 </th>
                                 <td>
                                     <select name="content_type" id="content_type">
-                                        <option value="post"><?php _e('Blog Post', 'ai-content-generator'); ?></option>
-                                        <option value="page"><?php _e('Page', 'ai-content-generator'); ?></option>
-                                        <option value="product"><?php _e('Product Description', 'ai-content-generator'); ?></option>
-                                        <option value="email"><?php _e('Email', 'ai-content-generator'); ?></option>
-                                        <option value="social"><?php _e('Social Media', 'ai-content-generator'); ?></option>
+                                        <option value="post"><?php _e('Blog Post', 'ai-content-classifier'); ?></option>
+                                        <option value="page"><?php _e('Page', 'ai-content-classifier'); ?></option>
+                                        <option value="product"><?php _e('Product Description', 'ai-content-classifier'); ?></option>
+                                        <option value="email"><?php _e('Email', 'ai-content-classifier'); ?></option>
+                                        <option value="social"><?php _e('Social Media', 'ai-content-classifier'); ?></option>
                                     </select>
                                 </td>
                             </tr>
                             
                             <tr>
                                 <th scope="row">
-                                    <label for="template_prompt"><?php _e('Prompt Template', 'ai-content-generator'); ?></label>
+                                    <label for="template_prompt"><?php _e('Prompt Template', 'ai-content-classifier'); ?></label>
                                 </th>
                                 <td>
                                     <textarea name="template_prompt" 
@@ -118,26 +118,26 @@ if (isset($_POST['action'])) {
                                               rows="8" 
                                               class="large-text" 
                                               required
-                                              placeholder="<?php esc_attr_e('Write a comprehensive guide about [TOPIC]. Include step-by-step instructions, tips, and examples. Target audience: [AUDIENCE]. Tone: [TONE]. Length: [LENGTH] words.', 'ai-content-generator'); ?>"></textarea>
+                                              placeholder="<?php esc_attr_e('Write a comprehensive guide about [TOPIC]. Include step-by-step instructions, tips, and examples. Target audience: [AUDIENCE]. Tone: [TONE]. Length: [LENGTH] words.', 'ai-content-classifier'); ?>"></textarea>
                                     <p class="description">
-                                        <?php _e('Use placeholders like [TOPIC], [AUDIENCE], [TONE], [LENGTH] that can be replaced when using the template.', 'ai-content-generator'); ?>
+                                        <?php _e('Use placeholders like [TOPIC], [AUDIENCE], [TONE], [LENGTH] that can be replaced when using the template.', 'ai-content-classifier'); ?>
                                     </p>
                                 </td>
                             </tr>
                             
                             <tr>
-                                <th scope="row"><?php _e('Options', 'ai-content-generator'); ?></th>
+                                <th scope="row"><?php _e('Options', 'ai-content-classifier'); ?></th>
                                 <td>
                                     <label>
                                         <input type="checkbox" name="seo_enabled" value="1" checked>
-                                        <?php _e('Enable SEO optimization by default', 'ai-content-generator'); ?>
+                                        <?php _e('Enable SEO optimization by default', 'ai-content-classifier'); ?>
                                     </label>
                                 </td>
                             </tr>
                         </table>
                         
                         <p class="submit">
-                            <input type="submit" class="button button-primary" value="<?php esc_attr_e('Create Template', 'ai-content-generator'); ?>">
+                            <input type="submit" class="button button-primary" value="<?php esc_attr_e('Create Template', 'ai-content-classifier'); ?>">
                         </p>
                     </form>
                 </div>
@@ -146,24 +146,24 @@ if (isset($_POST['action'])) {
             <!-- Existing templates -->
             <div class="postbox">
                 <div class="postbox-header">
-                    <h2><?php _e('Saved Templates', 'ai-content-generator'); ?></h2>
+                    <h2><?php _e('Saved Templates', 'ai-content-classifier'); ?></h2>
                 </div>
                 <div class="inside">
                     <?php if (empty($templates)): ?>
-                        <p><?php _e('No templates created yet. Create your first template above!', 'ai-content-generator'); ?></p>
+                        <p><?php _e('No templates created yet. Create your first template above!', 'ai-content-classifier'); ?></p>
                     <?php else: ?>
                         <div class="aicg-templates-list">
                             <?php foreach ($templates as $template): ?>
                                 <div class="template-item">
                                     <h3><?php echo esc_html($template->name); ?></h3>
-                                    <p><strong><?php _e('Type:', 'ai-content-generator'); ?></strong> <?php echo esc_html(ucfirst($template->content_type)); ?></p>
-                                    <p><strong><?php _e('SEO Enabled:', 'ai-content-generator'); ?></strong> <?php echo $template->seo_enabled ? __('Yes', 'ai-content-generator') : __('No', 'ai-content-generator'); ?></p>
-                                    <p><strong><?php _e('Prompt:', 'ai-content-generator'); ?></strong></p>
+                                    <p><strong><?php _e('Type:', 'ai-content-classifier'); ?></strong> <?php echo esc_html(ucfirst($template->content_type)); ?></p>
+                                    <p><strong><?php _e('SEO Enabled:', 'ai-content-classifier'); ?></strong> <?php echo $template->seo_enabled ? __('Yes', 'ai-content-classifier') : __('No', 'ai-content-classifier'); ?></p>
+                                    <p><strong><?php _e('Prompt:', 'ai-content-classifier'); ?></strong></p>
                                     <div class="template-prompt">
                                         <?php echo nl2br(esc_html(wp_trim_words($template->prompt, 50))); ?>
                                         <?php if (str_word_count($template->prompt) > 50): ?>
                                             <button type="button" class="button button-small toggle-full-prompt" data-template-id="<?php echo $template->id; ?>">
-                                                <?php _e('Show Full Prompt', 'ai-content-generator'); ?>
+                                                <?php _e('Show Full Prompt', 'ai-content-classifier'); ?>
                                             </button>
                                         <?php endif; ?>
                                     </div>
@@ -174,16 +174,16 @@ if (isset($_POST['action'])) {
                                     <div class="template-actions">
                                         <a href="<?php echo admin_url('admin.php?page=ai-content-generator&template=' . $template->id); ?>" 
                                            class="button button-primary">
-                                            <?php _e('Use Template', 'ai-content-generator'); ?>
+                                            <?php _e('Use Template', 'ai-content-classifier'); ?>
                                         </a>
                                         <button type="button" class="button edit-template" data-template-id="<?php echo $template->id; ?>">
-                                            <?php _e('Edit', 'ai-content-generator'); ?>
+                                            <?php _e('Edit', 'ai-content-classifier'); ?>
                                         </button>
-                                        <form method="post" style="display: inline;" onsubmit="return confirm('<?php esc_attr_e('Are you sure you want to delete this template?', 'ai-content-generator'); ?>');">
+                                        <form method="post" style="display: inline;" onsubmit="return confirm('<?php esc_attr_e('Are you sure you want to delete this template?', 'ai-content-classifier'); ?>');">
                                             <input type="hidden" name="action" value="delete_template">
                                             <input type="hidden" name="template_id" value="<?php echo $template->id; ?>">
                                             <input type="hidden" name="nonce" value="<?php echo wp_create_nonce('aicg_template_nonce'); ?>">
-                                            <input type="submit" class="button button-link-delete" value="<?php esc_attr_e('Delete', 'ai-content-generator'); ?>">
+                                            <input type="submit" class="button button-link-delete" value="<?php esc_attr_e('Delete', 'ai-content-classifier'); ?>">
                                         </form>
                                     </div>
                                 </div>
@@ -198,19 +198,19 @@ if (isset($_POST['action'])) {
         <div class="aicg-sidebar">
             <div class="postbox">
                 <div class="postbox-header">
-                    <h2><?php _e('Template Tips', 'ai-content-generator'); ?></h2>
+                    <h2><?php _e('Template Tips', 'ai-content-classifier'); ?></h2>
                 </div>
                 <div class="inside">
-                    <h4><?php _e('Creating Good Templates:', 'ai-content-generator'); ?></h4>
+                    <h4><?php _e('Creating Good Templates:', 'ai-content-classifier'); ?></h4>
                     <ul>
-                        <li><?php _e('Use clear, specific instructions', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Include placeholders for customization', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Specify tone and style requirements', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Mention target audience', 'ai-content-generator'); ?></li>
-                        <li><?php _e('Include formatting guidelines', 'ai-content-generator'); ?></li>
+                        <li><?php _e('Use clear, specific instructions', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Include placeholders for customization', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Specify tone and style requirements', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Mention target audience', 'ai-content-classifier'); ?></li>
+                        <li><?php _e('Include formatting guidelines', 'ai-content-classifier'); ?></li>
                     </ul>
                     
-                    <h4><?php _e('Useful Placeholders:', 'ai-content-generator'); ?></h4>
+                    <h4><?php _e('Useful Placeholders:', 'ai-content-classifier'); ?></h4>
                     <ul>
                         <li><code>[TOPIC]</code> - Main subject</li>
                         <li><code>[AUDIENCE]</code> - Target readers</li>
@@ -223,13 +223,13 @@ if (isset($_POST['action'])) {
             
             <div class="postbox">
                 <div class="postbox-header">
-                    <h2><?php _e('Example Templates', 'ai-content-generator'); ?></h2>
+                    <h2><?php _e('Example Templates', 'ai-content-classifier'); ?></h2>
                 </div>
                 <div class="inside">
-                    <h4><?php _e('Blog Post Template:', 'ai-content-generator'); ?></h4>
+                    <h4><?php _e('Blog Post Template:', 'ai-content-classifier'); ?></h4>
                     <p><em>"Write a comprehensive blog post about [TOPIC]. Include an engaging introduction, 3-5 main sections with examples, and a conclusion with actionable takeaways. Target audience: [AUDIENCE]. Tone: informative yet conversational. Length: 1500 words."</em></p>
                     
-                    <h4><?php _e('Product Description:', 'ai-content-generator'); ?></h4>
+                    <h4><?php _e('Product Description:', 'ai-content-classifier'); ?></h4>
                     <p><em>"Create a compelling product description for [PRODUCT]. Highlight key features, benefits, and unique selling points. Include technical specifications and use cases. Target customers: [AUDIENCE]. Tone: persuasive and professional. Length: 300 words."</em></p>
                 </div>
             </div>
@@ -246,16 +246,16 @@ jQuery(document).ready(function($) {
         
         if (fullPrompt.is(':visible')) {
             fullPrompt.hide();
-            $(this).text('<?php _e('Show Full Prompt', 'ai-content-generator'); ?>');
+            $(this).text('<?php _e('Show Full Prompt', 'ai-content-classifier'); ?>');
         } else {
             fullPrompt.show();
-            $(this).text('<?php _e('Hide Full Prompt', 'ai-content-generator'); ?>');
+            $(this).text('<?php _e('Hide Full Prompt', 'ai-content-classifier'); ?>');
         }
     });
     
     // Edit template functionality (simplified)
     $('.edit-template').on('click', function() {
-        alert('<?php _e('Edit functionality coming soon!', 'ai-content-generator'); ?>');
+        alert('<?php _e('Edit functionality coming soon!', 'ai-content-classifier'); ?>');
     });
 });
 </script>
