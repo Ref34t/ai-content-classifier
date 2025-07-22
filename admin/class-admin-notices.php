@@ -142,12 +142,12 @@ class AICG_Admin_Notices {
         }
         
         ?>
-        <div class="<?php echo esc_attr($class_attr); ?>" <?php echo $data_attrs; ?>>
+        <div class="<?php echo esc_attr($class_attr); ?>" <?php echo wp_kses_post($data_attrs); ?>>
             <p>
                 <?php echo wp_kses_post($notice['message']); ?>
                 <?php if (isset($notice['timestamp'])): ?>
                     <span class="notice-time" style="font-size: 0.9em; color: #666; margin-left: 10px;">
-                        <?php echo human_time_diff($notice['timestamp']); ?> ago
+                        <?php echo esc_html(human_time_diff($notice['timestamp'])); ?> ago
                     </span>
                 <?php endif; ?>
             </p>
@@ -383,7 +383,7 @@ class AICG_Admin_Notices {
         $notice_message = $message;
         
         if ($start_time && $end_time) {
-            $notice_message .= " Scheduled from " . date('Y-m-d H:i', $start_time) . " to " . date('Y-m-d H:i', $end_time) . ".";
+            $notice_message .= " Scheduled from " . gmdate('Y-m-d H:i', $start_time) . " to " . gmdate('Y-m-d H:i', $end_time) . ".";
         }
         
         $this->add_warning('aicg_maintenance', $notice_message, false);

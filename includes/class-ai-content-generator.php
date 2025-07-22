@@ -73,15 +73,15 @@ class AI_Content_Generator {
      */
     public function ajax_generate_content() {
         // Verify nonce and user capabilities
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
             wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
 
         // Sanitize and retrieve parameters
-        $prompt = sanitize_textarea_field($_POST['prompt']);
-        $content_type = sanitize_text_field($_POST['content_type']);
-        $seo_enabled = isset($_POST['seo_enabled']) && $_POST['seo_enabled'] === 'true';
+        $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
+        $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : '';
+        $seo_enabled = isset($_POST['seo_enabled']) && wp_unslash($_POST['seo_enabled']) === 'true';
 
         // Generate content using the new unified method
         $response = $this->handle_content_generation($prompt, $content_type, $seo_enabled);
@@ -122,6 +122,7 @@ class AI_Content_Generator {
      * Build a comprehensive prompt for AI
      */
     private function build_prompt($base_prompt, $content_type, $seo_enabled) {
+        /* translators: %s: content type (e.g., blog post, page, etc.) */
         $prompt = sprintf(__("You are a professional content writer creating %s content for WordPress.\n\n", 'ai-content-classifier'), $content_type);
         $prompt .= __("Instructions:\n", 'ai-content-classifier');
         $prompt .= __("- Write engaging, well-structured content\n", 'ai-content-classifier');
@@ -199,7 +200,7 @@ class AI_Content_Generator {
      */
     private function extract_title($content) {
         if (preg_match('/<h1[^>]*>(.*?)<\/h1>/i', $content, $matches)) {
-            return strip_tags($matches[1]);
+            return wp_strip_all_tags($matches[1]);
         }
         return __('Untitled', 'ai-content-classifier');
     }
@@ -294,13 +295,13 @@ class AI_Content_Generator {
      */
     public function ajax_save_template() {
         // Verify nonce and user capabilities
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
             wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
         
-        $name = sanitize_text_field($_POST['name']);
-        $content = sanitize_textarea_field($_POST['content']);
+        $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+        $content = isset($_POST['content']) ? sanitize_textarea_field(wp_unslash($_POST['content'])) : '';
         
         // Save template logic would go here
         wp_send_json_success(__('Template saved successfully!', 'ai-content-classifier'));
@@ -311,12 +312,12 @@ class AI_Content_Generator {
      */
     public function ajax_delete_template() {
         // Verify nonce and user capabilities
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
             wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
         
-        $id = intval($_POST['id']);
+        $id = isset($_POST['id']) ? intval(wp_unslash($_POST['id'])) : 0;
         
         // Delete template logic would go here
         wp_send_json_success(__('Template deleted successfully!', 'ai-content-classifier'));
@@ -327,18 +328,18 @@ class AI_Content_Generator {
      */
     public function ajax_create_post() {
         // Verify nonce and user capabilities
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_generate_nonce') || !current_user_can('edit_posts')) {
             wp_send_json_error(__('Security check failed.', 'ai-content-classifier'), 403);
             return;
         }
         
-        $title = sanitize_text_field($_POST['title']);
-        $content = wp_kses_post($_POST['content']);
-        $excerpt = sanitize_textarea_field($_POST['excerpt']);
-        $meta_description = sanitize_text_field($_POST['meta_description']);
-        $keywords = $_POST['keywords']; // Array of keywords
-        $content_type = sanitize_text_field($_POST['content_type']);
-        $status = sanitize_text_field($_POST['status']);
+        $title = isset($_POST['title']) ? sanitize_text_field(wp_unslash($_POST['title'])) : '';
+        $content = isset($_POST['content']) ? wp_kses_post(wp_unslash($_POST['content'])) : '';
+        $excerpt = isset($_POST['excerpt']) ? sanitize_textarea_field(wp_unslash($_POST['excerpt'])) : '';
+        $meta_description = isset($_POST['meta_description']) ? sanitize_text_field(wp_unslash($_POST['meta_description'])) : '';
+        $keywords = isset($_POST['keywords']) ? array_map('sanitize_text_field', wp_unslash($_POST['keywords'])) : array(); // Array of keywords
+        $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
+        $status = isset($_POST['status']) ? sanitize_text_field(wp_unslash($_POST['status'])) : 'draft';
         
         // Create post data
         $post_data = array(

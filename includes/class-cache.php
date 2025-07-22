@@ -132,7 +132,7 @@ class AICG_Cache {
         global $wpdb;
         $table_name = $wpdb->prefix . 'aicg_cache';
         
-        $expiry_time = date('Y-m-d H:i:s', time() + $expiry);
+        $expiry_time = gmdate('Y-m-d H:i:s', time() + $expiry);
         $serialized_data = maybe_serialize($data);
         
         $result = $wpdb->replace(

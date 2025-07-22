@@ -70,7 +70,7 @@ class AICG_Security {
      */
     public function sanitize_prompt($prompt) {
         // Remove potentially dangerous content
-        $prompt = strip_tags($prompt);
+        $prompt = wp_strip_all_tags($prompt);
         $prompt = wp_kses_post($prompt);
         
         // Remove suspicious patterns
@@ -191,13 +191,13 @@ class AICG_Security {
         // Clean up old temporary data (older than 7 days)
         $wpdb->query($wpdb->prepare(
             "DELETE FROM {$wpdb->prefix}aicg_temp_data WHERE created_at < %s",
-            date('Y-m-d H:i:s', strtotime('-7 days'))
+            gmdate('Y-m-d H:i:s', strtotime('-7 days'))
         ));
         
         // Clean up old usage logs (older than 30 days)
         $wpdb->query($wpdb->prepare(
             "DELETE FROM {$wpdb->prefix}aicg_usage_log WHERE created_at < %s",
-            date('Y-m-d H:i:s', strtotime('-30 days'))
+            gmdate('Y-m-d H:i:s', strtotime('-30 days'))
         ));
     }
     
@@ -237,7 +237,7 @@ class AICG_Security {
         global $wpdb;
         
         $where = "WHERE created_at >= %s";
-        $params = array(date('Y-m-d H:i:s', strtotime("-{$days} days")));
+        $params = array(gmdate('Y-m-d H:i:s', strtotime("-{$days} days")));
         
         if ($user_id) {
             $where .= " AND user_id = %d";

@@ -106,11 +106,11 @@ class AICG_Settings {
      * Section callbacks
      */
     public function api_settings_callback() {
-        echo '<p>' . __('Configure your OpenAI API settings.', 'ai-content-classifier') . '</p>';
+        echo '<p>' . esc_html__('Configure your OpenAI API settings.', 'ai-content-classifier') . '</p>';
     }
     
     public function generation_settings_callback() {
-        echo '<p>' . __('Customize how content is generated.', 'ai-content-classifier') . '</p>';
+        echo '<p>' . esc_html__('Customize how content is generated.', 'ai-content-classifier') . '</p>';
     }
     
     /**
@@ -126,7 +126,7 @@ class AICG_Settings {
                class="regular-text"
                placeholder="sk-..." />
         <p class="description">
-            <?php _e('Get your API key from', 'ai-content-classifier'); ?> 
+            <?php esc_html_e('Get your API key from', 'ai-content-classifier'); ?> 
             <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI</a>
         </p>
         <?php
@@ -146,7 +146,7 @@ class AICG_Settings {
             <?php endforeach; ?>
         </select>
         <p class="description">
-            <?php _e('Choose the AI model to use for content generation.', 'ai-content-classifier'); ?>
+            <?php esc_html_e('Choose the AI model to use for content generation.', 'ai-content-classifier'); ?>
         </p>
         <?php
     }
@@ -162,7 +162,7 @@ class AICG_Settings {
                max="8000" 
                step="100" />
         <p class="description">
-            <?php _e('Maximum number of tokens to generate (1 token ≈ 0.75 words).', 'ai-content-classifier'); ?>
+            <?php esc_html_e('Maximum number of tokens to generate (1 token ≈ 0.75 words).', 'ai-content-classifier'); ?>
         </p>
         <?php
     }
@@ -179,7 +179,7 @@ class AICG_Settings {
                step="0.1" />
         <span id="temp_value"><?php echo esc_html($value); ?></span>
         <p class="description">
-            <?php _e('Lower values = more focused, higher values = more creative.', 'ai-content-classifier'); ?>
+            <?php esc_html_e('Lower values = more focused, higher values = more creative.', 'ai-content-classifier'); ?>
         </p>
         <?php
     }
@@ -208,7 +208,7 @@ class AICG_Settings {
             <?php endforeach; ?>
         </select>
         <p class="description">
-            <?php _e('Default language for content generation.', 'ai-content-classifier'); ?>
+            <?php esc_html_e('Default language for content generation.', 'ai-content-classifier'); ?>
         </p>
         <?php
     }

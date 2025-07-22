@@ -64,11 +64,11 @@ class AICG_Template_Editor {
      */
     public function ajax_save_template() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_save_template')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         if (!current_user_can('edit_posts')) {
-            wp_die(__('Insufficient permissions', 'ai-content-classifier'));
+            wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
         $template_id = intval($_POST['template_id']);
@@ -105,7 +105,7 @@ class AICG_Template_Editor {
      */
     public function ajax_load_template() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_load_template')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         $template_id = intval($_POST['template_id']);
@@ -125,11 +125,11 @@ class AICG_Template_Editor {
      */
     public function ajax_delete_template() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_delete_template')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         if (!current_user_can('edit_posts')) {
-            wp_die(__('Insufficient permissions', 'ai-content-classifier'));
+            wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
         $template_id = intval($_POST['template_id']);
@@ -148,11 +148,11 @@ class AICG_Template_Editor {
      */
     public function ajax_duplicate_template() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_duplicate_template')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         if (!current_user_can('edit_posts')) {
-            wp_die(__('Insufficient permissions', 'ai-content-classifier'));
+            wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
         $template_id = intval($_POST['template_id']);
@@ -192,7 +192,7 @@ class AICG_Template_Editor {
      */
     public function ajax_validate_template() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_validate_template')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         $name = sanitize_text_field($_POST['name']);
@@ -228,11 +228,11 @@ class AICG_Template_Editor {
      */
     public function ajax_restore_template() {
         if (!wp_verify_nonce($_POST['nonce'], 'aicg_restore_template')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         if (!current_user_can('edit_posts')) {
-            wp_die(__('Insufficient permissions', 'ai-content-classifier'));
+            wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
         $template_id = intval($_POST['template_id']);

@@ -117,7 +117,8 @@ class AICG_Admin_Bar {
             'id' => 'aicg-usage-summary',
             'parent' => 'aicg-stats',
             'title' => sprintf(
-                __('Today: %d generations | Cost: $%s', 'ai-content-classifier'),
+                /* translators: %1$d: number of generations today, %2$s: cost amount */
+                __('Today: %1$d generations | Cost: $%2$s', 'ai-content-classifier'),
                 $stats['today_generations'],
                 number_format($stats['today_cost'], 3)
             ),
@@ -141,7 +142,8 @@ class AICG_Admin_Bar {
             'id' => 'aicg-cache-status',
             'parent' => 'aicg-stats',
             'title' => sprintf(
-                __('Cache: %d hits (%.1f%%)', 'ai-content-classifier'),
+                /* translators: %1$d: number of cache hits, %2$.1f: hit rate percentage */
+                __('Cache: %1$d hits (%2$.1f%%)', 'ai-content-classifier'),
                 $cache_stats['total_hits'],
                 $cache_stats['hit_rate']
             ),
@@ -163,8 +165,8 @@ class AICG_Admin_Bar {
         ));
         
         // Quick actions for current post (if editing)
-        if (is_admin() && isset($_GET['post']) && current_user_can('edit_post', $_GET['post'])) {
-            $post_id = intval($_GET['post']);
+        if (is_admin() && isset($_GET['post']) && current_user_can('edit_post', sanitize_text_field(wp_unslash($_GET['post'])))) {
+            $post_id = intval(sanitize_text_field(wp_unslash($_GET['post'])));
             $post = get_post($post_id);
             
             if ($post) {
@@ -328,15 +330,15 @@ class AICG_Admin_Bar {
      * AJAX handler for quick generate
      */
     public function ajax_quick_generate() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_quick_generate')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_quick_generate')) {
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         if (!current_user_can('edit_posts')) {
-            wp_die(__('Insufficient permissions', 'ai-content-classifier'));
+            wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
-        $prompt = sanitize_textarea_field($_POST['prompt']);
+        $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
         
         if (empty($prompt)) {
             wp_send_json_error(__('Prompt is required', 'ai-content-classifier'));
@@ -379,8 +381,8 @@ class AICG_Admin_Bar {
      * AJAX handler for admin bar stats
      */
     public function ajax_admin_bar_stats() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_admin_bar_stats')) {
-            wp_die(__('Security check failed', 'ai-content-classifier'));
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_admin_bar_stats')) {
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         $stats = $this->get_detailed_stats();
@@ -395,8 +397,8 @@ class AICG_Admin_Bar {
         $user_id = get_current_user_id();
         
         // Get today's usage
-        $today_start = date('Y-m-d 00:00:00');
-        $today_end = date('Y-m-d 23:59:59');
+        $today_start = gmdate('Y-m-d 00:00:00');
+        $today_end = gmdate('Y-m-d 23:59:59');
         
         global $wpdb;
         $usage_table = $wpdb->prefix . 'aicg_usage_log';
@@ -456,8 +458,8 @@ class AICG_Admin_Bar {
         }
         
         // Today's stats
-        $today_start = date('Y-m-d 00:00:00');
-        $today_end = date('Y-m-d 23:59:59');
+        $today_start = gmdate('Y-m-d 00:00:00');
+        $today_end = gmdate('Y-m-d 23:59:59');
         
         $today_stats = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) as generations, COALESCE(SUM(cost), 0) as cost
@@ -469,7 +471,7 @@ class AICG_Admin_Bar {
         ));
         
         // Week's stats
-        $week_start = date('Y-m-d 00:00:00', strtotime('-7 days'));
+        $week_start = gmdate('Y-m-d 00:00:00', strtotime('-7 days'));
         
         $week_stats = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) as generations, COALESCE(SUM(cost), 0) as cost

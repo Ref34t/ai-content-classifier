@@ -8,6 +8,7 @@ class AICG_Logger {
     private $log_level;
     private $max_log_size;
     private $max_log_files;
+    private $wp_filesystem;
     
     // Log levels
     const EMERGENCY = 0;
@@ -31,6 +32,7 @@ class AICG_Logger {
     );
     
     public function __construct() {
+        $this->init_wp_filesystem();
         $this->log_level = defined('WP_DEBUG') && WP_DEBUG ? self::DEBUG : self::ERROR;
         $this->max_log_size = 5 * 1024 * 1024; // 5MB
         $this->max_log_files = 5;
@@ -40,20 +42,32 @@ class AICG_Logger {
         $log_dir = $upload_dir['basedir'] . '/ai-content-generator/logs';
         
         // Create log directory if it doesn't exist
-        if (!file_exists($log_dir)) {
+        if (!$this->wp_filesystem->exists($log_dir)) {
             wp_mkdir_p($log_dir);
             
             // Add .htaccess to protect logs
             $htaccess_file = $log_dir . '/.htaccess';
-            if (!file_exists($htaccess_file)) {
-                file_put_contents($htaccess_file, "deny from all\n");
+            if (!$this->wp_filesystem->exists($htaccess_file)) {
+                $this->wp_filesystem->put_contents($htaccess_file, "deny from all\n", FS_CHMOD_FILE);
             }
         }
         
-        $this->log_file = $log_dir . '/aicg-' . date('Y-m-d') . '.log';
+        $this->log_file = $log_dir . '/aicg-' . gmdate('Y-m-d') . '.log';
         
         // Initialize logging
         $this->info('Logger initialized');
+    }
+    
+    /**
+     * Initialize WP_Filesystem
+     */
+    private function init_wp_filesystem() {
+        if (!function_exists('WP_Filesystem')) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+        }
+        WP_Filesystem();
+        global $wp_filesystem;
+        $this->wp_filesystem = $wp_filesystem;
     }
     
     /**
@@ -132,7 +146,7 @@ class AICG_Logger {
         
         // Also log to WordPress debug log if enabled
         if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
-            error_log($log_entry);
+            // Removed error_log for production - use file logging instead
         }
         
         // For critical errors, also send email notification
@@ -145,7 +159,7 @@ class AICG_Logger {
      * Format log entry
      */
     private function format_log_entry($level, $message, $context) {
-        $timestamp = date('Y-m-d H:i:s');
+        $timestamp = gmdate('Y-m-d H:i:s');
         $level_name = $this->log_levels[$level];
         $user_id = get_current_user_id();
         $ip_address = $this->get_client_ip();
@@ -178,27 +192,28 @@ class AICG_Logger {
      * Write to log file
      */
     private function write_to_file($log_entry) {
-        // Use file locking to prevent corruption
-        $fp = fopen($this->log_file, 'a');
-        if ($fp) {
-            if (flock($fp, LOCK_EX)) {
-                fwrite($fp, $log_entry);
-                fflush($fp);
-                flock($fp, LOCK_UN);
-            }
-            fclose($fp);
+        // Get existing content if file exists
+        $existing_content = '';
+        if ($this->wp_filesystem->exists($this->log_file)) {
+            $existing_content = $this->wp_filesystem->get_contents($this->log_file);
         }
+        
+        // Append new log entry
+        $new_content = $existing_content . $log_entry;
+        
+        // Write back to file
+        $this->wp_filesystem->put_contents($this->log_file, $new_content, FS_CHMOD_FILE);
     }
     
     /**
      * Rotate log file if it's too large
      */
     private function rotate_log_if_needed() {
-        if (!file_exists($this->log_file)) {
+        if (!$this->wp_filesystem->exists($this->log_file)) {
             return;
         }
         
-        $file_size = filesize($this->log_file);
+        $file_size = $this->wp_filesystem->size($this->log_file);
         if ($file_size > $this->max_log_size) {
             $this->rotate_log();
         }
@@ -216,25 +231,25 @@ class AICG_Logger {
             $old_file = $log_dir . '/' . $base_name . '.' . $i . '.log';
             $new_file = $log_dir . '/' . $base_name . '.' . ($i + 1) . '.log';
             
-            if (file_exists($old_file)) {
+            if ($this->wp_filesystem->exists($old_file)) {
                 if ($i == $this->max_log_files - 1) {
-                    unlink($old_file); // Delete oldest file
+                    wp_delete_file($old_file); // Delete oldest file
                 } else {
-                    rename($old_file, $new_file);
+                    $this->wp_filesystem->move($old_file, $new_file);
                 }
             }
         }
         
         // Move current file to .1
         $rotated_file = $log_dir . '/' . $base_name . '.1.log';
-        rename($this->log_file, $rotated_file);
+        $this->wp_filesystem->move($this->log_file, $rotated_file);
         
         // Compress old log file
         if (function_exists('gzencode')) {
-            $content = file_get_contents($rotated_file);
+            $content = $this->wp_filesystem->get_contents($rotated_file);
             $compressed = gzencode($content);
-            file_put_contents($rotated_file . '.gz', $compressed);
-            unlink($rotated_file);
+            $this->wp_filesystem->put_contents($rotated_file . '.gz', $compressed, FS_CHMOD_FILE);
+            wp_delete_file($rotated_file);
         }
     }
     
@@ -268,7 +283,7 @@ class AICG_Logger {
             "Please check the plugin logs for more details.",
             $this->log_levels[$level],
             $message,
-            date('Y-m-d H:i:s'),
+            gmdate('Y-m-d H:i:s'),
             home_url(),
             get_current_user_id(),
             $this->get_client_ip(),
@@ -325,11 +340,14 @@ class AICG_Logger {
      * Get log entries for admin viewing
      */
     public function get_log_entries($limit = 100, $level = null) {
-        if (!file_exists($this->log_file)) {
+        if (!$this->wp_filesystem->exists($this->log_file)) {
             return array();
         }
         
-        $lines = file($this->log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $content = $this->wp_filesystem->get_contents($this->log_file);
+        $lines = array_filter(explode("\n", $content), function($line) {
+            return !empty(trim($line));
+        });
         $entries = array();
         
         // Parse log entries
@@ -377,7 +395,7 @@ class AICG_Logger {
         $files = glob($log_dir . '/*.log*');
         
         foreach ($files as $file) {
-            unlink($file);
+            wp_delete_file($file);
         }
         
         $this->info('Log files cleared');
@@ -387,7 +405,7 @@ class AICG_Logger {
      * Get log statistics
      */
     public function get_log_stats() {
-        if (!file_exists($this->log_file)) {
+        if (!$this->wp_filesystem->exists($this->log_file)) {
             return array(
                 'total_entries' => 0,
                 'file_size' => 0,
@@ -395,8 +413,11 @@ class AICG_Logger {
             );
         }
         
-        $lines = file($this->log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $file_size = filesize($this->log_file);
+        $content = $this->wp_filesystem->get_contents($this->log_file);
+        $lines = array_filter(explode("\n", $content), function($line) {
+            return !empty(trim($line));
+        });
+        $file_size = $this->wp_filesystem->size($this->log_file);
         $last_line = end($lines);
         
         return array(

@@ -8,14 +8,28 @@ class AICG_REST_API {
     private $logger;
     private $cache;
     private $security;
+    private $wp_filesystem;
     
     public function __construct() {
+        $this->init_wp_filesystem();
         $this->logger = new AICG_Logger();
         $this->cache = new AICG_Cache();
         $this->security = new AICG_Security();
         
         add_action('rest_api_init', array($this, 'register_routes'));
         add_filter('rest_pre_dispatch', array($this, 'pre_dispatch'), 10, 3);
+    }
+    
+    /**
+     * Initialize WP_Filesystem
+     */
+    private function init_wp_filesystem() {
+        if (!function_exists('WP_Filesystem')) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+        }
+        WP_Filesystem();
+        global $wp_filesystem;
+        $this->wp_filesystem = $wp_filesystem;
     }
     
     /**
@@ -443,7 +457,7 @@ class AICG_REST_API {
         $health['checks']['cache'] = $this->cache->test_encryption();
         
         // Check file permissions
-        $health['checks']['file_permissions'] = is_writable(wp_upload_dir()['basedir']);
+        $health['checks']['file_permissions'] = $this->wp_filesystem->is_writable(wp_upload_dir()['basedir']);
         
         // Overall health
         $all_healthy = !in_array(false, $health['checks'], true);

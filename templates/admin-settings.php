@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 
 // Handle form submission
 if (isset($_POST['submit'])) {
-    echo '<div class="notice notice-success"><p>' . __('Settings saved successfully!', 'ai-content-classifier') . '</p></div>';
+    echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully!', 'ai-content-classifier') . '</p></div>';
 }
 
 // Test API connection
@@ -34,11 +34,11 @@ if (!empty($api_key)) {
     
     <?php if ($api_status === 'error'): ?>
         <div class="notice notice-error">
-            <p><?php _e('API connection failed. Please check your API key.', 'ai-content-classifier'); ?></p>
+            <p><?php esc_html_e('API connection failed. Please check your API key.', 'ai-content-classifier'); ?></p>
         </div>
     <?php elseif ($api_status === 'connected'): ?>
         <div class="notice notice-success">
-            <p><?php _e('API connection successful!', 'ai-content-classifier'); ?></p>
+            <p><?php esc_html_e('API connection successful!', 'ai-content-classifier'); ?></p>
         </div>
     <?php endif; ?>
     
@@ -51,23 +51,23 @@ if (!empty($api_key)) {
     </form>
     
     <div class="aicg-settings-section">
-        <h2><?php _e('Getting Started', 'ai-content-classifier'); ?></h2>
+        <h2><?php esc_html_e('Getting Started', 'ai-content-classifier'); ?></h2>
         <ol>
-            <li><?php _e('Sign up for an OpenAI account at', 'ai-content-classifier'); ?> <a href="https://platform.openai.com" target="_blank">platform.openai.com</a></li>
-            <li><?php _e('Create an API key in your OpenAI dashboard', 'ai-content-classifier'); ?></li>
-            <li><?php _e('Add billing information to your OpenAI account', 'ai-content-classifier'); ?></li>
-            <li><?php _e('Paste your API key above and save settings', 'ai-content-classifier'); ?></li>
-            <li><?php _e('Start generating content!', 'ai-content-classifier'); ?></li>
+            <li><?php esc_html_e('Sign up for an OpenAI account at', 'ai-content-classifier'); ?> <a href="https://platform.openai.com" target="_blank">platform.openai.com</a></li>
+            <li><?php esc_html_e('Create an API key in your OpenAI dashboard', 'ai-content-classifier'); ?></li>
+            <li><?php esc_html_e('Add billing information to your OpenAI account', 'ai-content-classifier'); ?></li>
+            <li><?php esc_html_e('Paste your API key above and save settings', 'ai-content-classifier'); ?></li>
+            <li><?php esc_html_e('Start generating content!', 'ai-content-classifier'); ?></li>
         </ol>
         
-        <h3><?php _e('Cost Information', 'ai-content-classifier'); ?></h3>
-        <p><?php _e('OpenAI charges per token used. Approximate costs:', 'ai-content-classifier'); ?></p>
+        <h3><?php esc_html_e('Cost Information', 'ai-content-classifier'); ?></h3>
+        <p><?php esc_html_e('OpenAI charges per token used. Approximate costs:', 'ai-content-classifier'); ?></p>
         <ul>
             <li>GPT-3.5 Turbo: ~$0.002 per 1,000 tokens</li>
             <li>GPT-4: ~$0.06 per 1,000 tokens</li>
             <li>1 token ≈ 0.75 words</li>
         </ul>
-        <p><?php _e('A typical blog post (1,000 words) costs $0.003-0.08 to generate.', 'ai-content-classifier'); ?></p>
+        <p><?php esc_html_e('A typical blog post (1,000 words) costs $0.003-0.08 to generate.', 'ai-content-classifier'); ?></p>
     </div>
 </div>
 

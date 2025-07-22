@@ -16,6 +16,13 @@ if (!current_user_can('activate_plugins')) {
     exit;
 }
 
+// Initialize WP_Filesystem
+if (!function_exists('WP_Filesystem')) {
+    require_once(ABSPATH . 'wp-admin/includes/file.php');
+}
+WP_Filesystem();
+global $wp_filesystem;
+
 // Delete all plugin options
 delete_option('aicg_api_key');
 delete_option('aicg_model');
@@ -80,21 +87,24 @@ wp_cache_flush();
 $upload_dir = wp_upload_dir();
 $plugin_upload_dir = $upload_dir['basedir'] . '/ai-content-generator';
 
-if (is_dir($plugin_upload_dir)) {
-    // Function to recursively remove directory
+if ($wp_filesystem->is_dir($plugin_upload_dir)) {
+    // Function to recursively remove directory using WP_Filesystem
     function aicg_remove_directory($dir) {
-        if (is_dir($dir)) {
-            $objects = scandir($dir);
-            foreach ($objects as $object) {
-                if ($object != "." && $object != "..") {
-                    if (is_dir($dir . "/" . $object)) {
-                        aicg_remove_directory($dir . "/" . $object);
+        global $wp_filesystem;
+        
+        if ($wp_filesystem->is_dir($dir)) {
+            $objects = $wp_filesystem->dirlist($dir);
+            if ($objects) {
+                foreach ($objects as $name => $object) {
+                    $full_path = trailingslashit($dir) . $name;
+                    if ($object['type'] === 'd') {
+                        aicg_remove_directory($full_path);
                     } else {
-                        unlink($dir . "/" . $object);
+                        wp_delete_file($full_path);
                     }
                 }
             }
-            rmdir($dir);
+            $wp_filesystem->rmdir($dir);
         }
     }
     
@@ -116,7 +126,7 @@ if ($roles) {
 }
 
 // Log the uninstall action
-error_log('AI Content Classifier plugin uninstalled successfully at ' . current_time('mysql'));
+// Plugin uninstalled successfully - removed debug log for production
 
 // Final cleanup - remove any remaining plugin traces
 $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'aicg_%'");
