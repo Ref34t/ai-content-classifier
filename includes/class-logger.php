@@ -309,7 +309,7 @@ class AICG_Logger {
         
         foreach ($ip_headers as $header) {
             if (!empty($_SERVER[$header])) {
-                $ip = $_SERVER[$header];
+                $ip = sanitize_text_field(wp_unslash($_SERVER[$header]));
                 if (strpos($ip, ',') !== false) {
                     $ip = explode(',', $ip)[0];
                 }
@@ -320,7 +320,7 @@ class AICG_Logger {
             }
         }
         
-        return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        return isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : 'unknown';
     }
     
     /**

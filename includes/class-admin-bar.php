@@ -330,7 +330,7 @@ class AICG_Admin_Bar {
      * AJAX handler for quick generate
      */
     public function ajax_quick_generate() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_quick_generate')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_quick_generate')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -381,7 +381,7 @@ class AICG_Admin_Bar {
      * AJAX handler for admin bar stats
      */
     public function ajax_admin_bar_stats() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'aicg_admin_bar_stats')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_admin_bar_stats')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         

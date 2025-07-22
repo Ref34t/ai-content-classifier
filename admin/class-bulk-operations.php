@@ -72,7 +72,7 @@ class AICG_Bulk_Operations {
      * AJAX handler for bulk generation
      */
     public function ajax_bulk_generate() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_bulk_generate')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_bulk_generate')) {
             wp_die('Security check failed');
         }
         
@@ -80,7 +80,8 @@ class AICG_Bulk_Operations {
             wp_die('Insufficient permissions');
         }
         
-        $operations = json_decode(stripslashes($_POST['operations']), true);
+        $operations_raw = isset($_POST['operations']) ? wp_unslash($_POST['operations']) : '';
+        $operations = json_decode($operations_raw, true);
         
         if (!is_array($operations) || empty($operations)) {
             wp_send_json_error('Invalid operations data');
@@ -110,11 +111,15 @@ class AICG_Bulk_Operations {
      * AJAX handler for bulk status
      */
     public function ajax_bulk_status() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_bulk_status')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_bulk_status')) {
             wp_die('Security check failed');
         }
         
-        $batch_id = sanitize_text_field($_POST['batch_id']);
+        $batch_id = isset($_POST['batch_id']) ? sanitize_text_field(wp_unslash($_POST['batch_id'])) : '';
+        
+        if (empty($batch_id)) {
+            wp_send_json_error('Invalid batch ID');
+        }
         $status = $this->get_batch_status($batch_id);
         
         wp_send_json_success($status);
@@ -124,11 +129,15 @@ class AICG_Bulk_Operations {
      * AJAX handler for bulk cancellation
      */
     public function ajax_bulk_cancel() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_bulk_cancel')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_bulk_cancel')) {
             wp_die('Security check failed');
         }
         
-        $batch_id = sanitize_text_field($_POST['batch_id']);
+        $batch_id = isset($_POST['batch_id']) ? sanitize_text_field(wp_unslash($_POST['batch_id'])) : '';
+        
+        if (empty($batch_id)) {
+            wp_send_json_error('Invalid batch ID');
+        }
         $result = $this->cancel_batch($batch_id);
         
         if ($result) {

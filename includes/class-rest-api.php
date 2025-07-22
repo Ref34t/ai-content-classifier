@@ -314,21 +314,17 @@ class AICG_REST_API {
             $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
         }
         
+        $base_query = "SELECT * FROM {$wpdb->prefix}aicg_templates " . $where_clause . " ORDER BY created_at DESC LIMIT %d OFFSET %d";
         $query = $wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}aicg_templates 
-            $where_clause 
-            ORDER BY created_at DESC 
-            LIMIT %d OFFSET %d",
+            $base_query,
             array_merge($where_values, array($per_page, $offset))
         );
         
         $templates = $wpdb->get_results($query);
         
         // Get total count
-        $count_query = $wpdb->prepare(
-            "SELECT COUNT(*) FROM {$wpdb->prefix}aicg_templates $where_clause",
-            $where_values
-        );
+        $count_base_query = "SELECT COUNT(*) FROM {$wpdb->prefix}aicg_templates " . $where_clause;
+        $count_query = $wpdb->prepare($count_base_query, $where_values);
         $total = $wpdb->get_var($count_query);
         
         return new WP_REST_Response(array(
@@ -611,7 +607,7 @@ class AICG_REST_API {
         
         foreach ($ip_headers as $header) {
             if (!empty($_SERVER[$header])) {
-                $ip = $_SERVER[$header];
+                $ip = sanitize_text_field(wp_unslash($_SERVER[$header]));
                 if (strpos($ip, ',') !== false) {
                     $ip = explode(',', $ip)[0];
                 }
@@ -622,6 +618,6 @@ class AICG_REST_API {
             }
         }
         
-        return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        return isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : 'unknown';
     }
 }

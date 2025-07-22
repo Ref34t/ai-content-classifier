@@ -166,12 +166,16 @@ class AICG_Admin_Notices {
      * AJAX handler for dismissing notices
      */
     public function ajax_dismiss_notice() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_dismiss_notice')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_dismiss_notice')) {
             wp_die('Security check failed');
         }
         
-        $notice_id = sanitize_text_field($_POST['notice_id']);
+        $notice_id = isset($_POST['notice_id']) ? sanitize_text_field(wp_unslash($_POST['notice_id'])) : '';
         $user_id = get_current_user_id();
+        
+        if (empty($notice_id)) {
+            wp_send_json_error('Invalid notice ID');
+        }
         
         $this->dismiss_notice($notice_id, $user_id);
         

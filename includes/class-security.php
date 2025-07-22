@@ -244,16 +244,15 @@ class AICG_Security {
             $params[] = $user_id;
         }
         
-        $query = $wpdb->prepare(
-            "SELECT 
-                COUNT(*) as total_requests,
-                SUM(tokens_used) as total_tokens,
-                SUM(cost) as total_cost,
-                AVG(tokens_used) as avg_tokens_per_request
-            FROM {$wpdb->prefix}aicg_usage_log 
-            {$where}",
-            $params
-        );
+        $base_query = "SELECT 
+            COUNT(*) as total_requests,
+            SUM(tokens_used) as total_tokens,
+            SUM(cost) as total_cost,
+            AVG(tokens_used) as avg_tokens_per_request
+        FROM {$wpdb->prefix}aicg_usage_log 
+        " . $where;
+        
+        $query = $wpdb->prepare($base_query, $params);
         
         return $wpdb->get_row($query);
     }

@@ -63,7 +63,7 @@ class AICG_Template_Editor {
      * AJAX handler for saving template
      */
     public function ajax_save_template() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_save_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_save_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -71,13 +71,13 @@ class AICG_Template_Editor {
             wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
-        $template_id = intval($_POST['template_id']);
-        $name = sanitize_text_field($_POST['name']);
-        $prompt = sanitize_textarea_field($_POST['prompt']);
-        $content_type = sanitize_text_field($_POST['content_type']);
+        $template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
+        $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+        $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
+        $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
         $seo_enabled = isset($_POST['seo_enabled']) ? 1 : 0;
-        $variables = json_decode(stripslashes($_POST['variables']), true);
-        $change_log = sanitize_textarea_field($_POST['change_log']);
+        $variables = isset($_POST['variables']) ? json_decode(wp_unslash($_POST['variables']), true) : array();
+        $change_log = isset($_POST['change_log']) ? sanitize_textarea_field(wp_unslash($_POST['change_log'])) : '';
         
         // Validate template
         $validation_result = $this->validate_template($name, $prompt, $content_type);
@@ -104,11 +104,11 @@ class AICG_Template_Editor {
      * AJAX handler for loading template
      */
     public function ajax_load_template() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_load_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_load_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
-        $template_id = intval($_POST['template_id']);
+        $template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
         $version_number = isset($_POST['version_number']) ? intval($_POST['version_number']) : null;
         
         $template = $this->load_template($template_id, $version_number);
@@ -124,7 +124,7 @@ class AICG_Template_Editor {
      * AJAX handler for deleting template
      */
     public function ajax_delete_template() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_delete_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_delete_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -132,7 +132,7 @@ class AICG_Template_Editor {
             wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
-        $template_id = intval($_POST['template_id']);
+        $template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
         
         $result = $this->delete_template($template_id);
         
@@ -147,7 +147,7 @@ class AICG_Template_Editor {
      * AJAX handler for duplicating template
      */
     public function ajax_duplicate_template() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_duplicate_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_duplicate_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -155,8 +155,8 @@ class AICG_Template_Editor {
             wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
-        $template_id = intval($_POST['template_id']);
-        $new_name = sanitize_text_field($_POST['new_name']);
+        $template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
+        $new_name = isset($_POST['new_name']) ? sanitize_text_field(wp_unslash($_POST['new_name'])) : '';
         
         $result = $this->duplicate_template($template_id, $new_name);
         
@@ -174,13 +174,13 @@ class AICG_Template_Editor {
      * AJAX handler for template preview
      */
     public function ajax_preview_template() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_preview_template')) {
-            wp_die('Security check failed');
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_preview_template')) {
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
-        $prompt = sanitize_textarea_field($_POST['prompt']);
-        $content_type = sanitize_text_field($_POST['content_type']);
-        $variables = json_decode(stripslashes($_POST['variables']), true);
+        $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
+        $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
+        $variables = isset($_POST['variables']) ? json_decode(wp_unslash($_POST['variables']), true) : array();
         
         $preview = $this->preview_template($prompt, $content_type, $variables);
         
@@ -191,13 +191,13 @@ class AICG_Template_Editor {
      * AJAX handler for template validation
      */
     public function ajax_validate_template() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_validate_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_validate_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
-        $name = sanitize_text_field($_POST['name']);
-        $prompt = sanitize_textarea_field($_POST['prompt']);
-        $content_type = sanitize_text_field($_POST['content_type']);
+        $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+        $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
+        $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
         
         $validation_result = $this->validate_template($name, $prompt, $content_type);
         
@@ -212,11 +212,11 @@ class AICG_Template_Editor {
      * AJAX handler for template history
      */
     public function ajax_template_history() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_template_history')) {
-            wp_die('Security check failed');
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_template_history')) {
+            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
-        $template_id = intval($_POST['template_id']);
+        $template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
         
         $history = $this->get_template_history($template_id);
         
@@ -227,7 +227,7 @@ class AICG_Template_Editor {
      * AJAX handler for restoring template version
      */
     public function ajax_restore_template() {
-        if (!wp_verify_nonce($_POST['nonce'], 'aicg_restore_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_restore_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -235,8 +235,8 @@ class AICG_Template_Editor {
             wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
         
-        $template_id = intval($_POST['template_id']);
-        $version_number = intval($_POST['version_number']);
+        $template_id = isset($_POST['template_id']) ? intval($_POST['template_id']) : 0;
+        $version_number = isset($_POST['version_number']) ? intval($_POST['version_number']) : 0;
         
         $result = $this->restore_template_version($template_id, $version_number);
         
