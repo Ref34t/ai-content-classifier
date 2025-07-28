@@ -139,11 +139,11 @@ For more information, see our [privacy policy](https://mokhaled.dev/privacy).
 
 == Support ==
 
-For support, feature requests, and bug reports, please visit our [support forum](https://wordpress.org/support/plugin/ai-content-generator/) or [GitHub repository](https://github.com/mokhaled/ai-content-generator).
+For support, feature requests, and bug reports, please visit our [support forum](https://wordpress.org/support/plugin/ai-content-classifier/) or [GitHub repository](https://github.com/ref34t/ai-content-classifier).
 
 == Development ==
 
-This plugin is open source and available on [GitHub](https://github.com/mokhaled/ai-content-generator). Contributions are welcome!
+This plugin is open source and available on [GitHub](https://github.com/ref34t/ai-content-classifier). Contributions are welcome!
 
 = Minimum Requirements =
 

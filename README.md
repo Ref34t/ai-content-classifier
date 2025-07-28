@@ -2,7 +2,7 @@
 
 **Generate SEO-optimized WordPress content using OpenAI's GPT API. Create blog posts, pages, and more with AI-powered content generation.**
 
-[![WordPress Plugin Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/mokhaled/ai-content-generator)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](https://github.com/ref34t/ai-content-classifier)
 [![WordPress Compatibility](https://img.shields.io/badge/wordpress-5.0%2B-green.svg)](https://wordpress.org/)
 [![PHP Version](https://img.shields.io/badge/php-7.4%2B-purple.svg)](https://php.net/)
 [![License](https://img.shields.io/badge/license-GPLv2%2B-orange.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
@@ -262,12 +262,12 @@ For support and questions:
 For support, feature requests, and bug reports:
 
 - [WordPress.org Support Forum](https://wordpress.org/support/plugin/ai-content-generator/)
-- [GitHub Issues](https://github.com/mokhaled/ai-content-generator/issues)
-- [Documentation](https://github.com/mokhaled/ai-content-generator/wiki)
+- [GitHub Issues](https://github.com/ref34t/ai-content-classifier/issues)
+- [Documentation](https://github.com/ref34t/ai-content-classifier/wiki)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please submit pull requests to our [GitHub repository](https://github.com/mokhaled/ai-content-generator).
+Contributions are welcome! Please submit pull requests to our [GitHub repository](https://github.com/ref34t/ai-content-classifier).
 
 1. Fork the repository
 2. Create a feature branch
@@ -321,7 +321,7 @@ We are not affiliated with OpenAI.
 
 ## 🔗 Links
 
-- [Plugin Homepage](https://github.com/mokhaled/ai-content-generator)
+- [Plugin Homepage](https://github.com/ref34t/ai-content-classifier)
 - [WordPress.org Plugin Page](https://wordpress.org/plugins/ai-content-generator/)
 - [Author Website](https://mokhaled.dev)
 - [OpenAI Platform](https://platform.openai.com)

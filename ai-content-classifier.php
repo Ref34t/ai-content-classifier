@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: AI Content Classifier
- * Plugin URI: https://github.com/ref34t/ai-content-generator
+ * Plugin URI: https://github.com/ref34t/ai-content-classifier
  * Description: Generate SEO-optimized WordPress content using OpenAI's GPT API
  * Version: 1.1.1
  * Author: Mo Khaled
@@ -63,7 +63,7 @@ add_filter('plugin_row_meta', 'aicg_plugin_meta_links', 10, 2);
 function aicg_plugin_meta_links($links, $file) {
     if ($file === AICG_PLUGIN_BASENAME) {
         $links[] = '<a href="' . admin_url('admin.php?page=ai-content-generator') . '">' . __('Generate Content', 'ai-content-classifier') . '</a>';
-        $links[] = '<a href="https://github.com/ref34t/ai-content-generator" target="_blank">' . __('GitHub', 'ai-content-classifier') . '</a>';
+        $links[] = '<a href="https://github.com/ref34t/ai-content-classifier" target="_blank">' . __('GitHub', 'ai-content-classifier') . '</a>';
     }
     return $links;
 }
