@@ -105,7 +105,7 @@ class AICG_Security {
         $content = preg_replace('/on\w+\s*=/i', '', $content);
         
         // Remove potential malicious links
-        $content = preg_replace_callback('/<a\s+[^>]*href\s*=\s*["\']([^"\']+)["\'][^>]*>/i', function($matches) {
+        $content = preg_replace_callback('/<a\s+[^>]*href\s*=\s*["\\](["\\]+)[^>]*>/i', function($matches) {
             $url = $matches[1];
             
             // Check if URL is safe
@@ -188,35 +188,70 @@ class AICG_Security {
     public function cleanup_old_data() {
         global $wpdb;
         
+        // Check cache to avoid running cleanup too frequently
+        $cache_key = 'aicg_last_cleanup';
+        $last_cleanup = wp_cache_get($cache_key);
+        
+        // Only run cleanup once per hour
+        if ($last_cleanup && (time() - $last_cleanup) < 3600) {
+            return;
+        }
+        
         // Clean up old temporary data (older than 7 days)
-        $wpdb->query($wpdb->prepare(
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $deleted_temp = $wpdb->query($wpdb->prepare(
             "DELETE FROM {$wpdb->prefix}aicg_temp_data WHERE created_at < %s",
             gmdate('Y-m-d H:i:s', strtotime('-7 days'))
         ));
         
         // Clean up old usage logs (older than 30 days)
-        $wpdb->query($wpdb->prepare(
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $deleted_logs = $wpdb->query($wpdb->prepare(
             "DELETE FROM {$wpdb->prefix}aicg_usage_log WHERE created_at < %s",
             gmdate('Y-m-d H:i:s', strtotime('-30 days'))
         ));
+        
+        // Cache the cleanup timestamp
+        wp_cache_set($cache_key, time(), '', 3600);
+        
+        // Log cleanup results
+        if ($deleted_temp > 0 || $deleted_logs > 0) {
+            $logger = new AICG_Logger();
+            $logger->info("AICG Security Cleanup: Removed {$deleted_temp} temp records and {$deleted_logs} usage logs");
+        }
     }
-    
+
     /**
      * Log usage for monitoring
      */
     public function log_usage($user_id, $tokens_used, $cost, $model) {
         global $wpdb;
-        
+
         $usage_table = $wpdb->prefix . 'aicg_usage_log';
-        
-        // Check if table exists before trying to insert
-        if ($wpdb->get_var("SHOW TABLES LIKE '$usage_table'") != $usage_table) {
+
+        // Cache table existence check to avoid repeated SHOW TABLES queries
+        $table_exists_key = 'aicg_usage_table_exists';
+        $table_exists = wp_cache_get($table_exists_key);
+
+        if ($table_exists === false) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $usage_table)) == $usage_table;
+            wp_cache_set($table_exists_key, $table_exists, '', 300); // Cache for 5 minutes
+        }
+
+        if (!$table_exists) {
             // Try to create the table if it doesn't exist
             aicg_create_tables();
+            // Invalidate cache after table creation attempt
+            wp_cache_delete($table_exists_key);
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $usage_table)) == $usage_table;
+            wp_cache_set($table_exists_key, $table_exists, '', 300);
         }
-        
+
         // Only insert if table exists or was created successfully
-        if ($wpdb->get_var("SHOW TABLES LIKE '$usage_table'") == $usage_table) {
+        if ($table_exists) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $wpdb->insert(
                 $usage_table,
                 array(
@@ -225,36 +260,58 @@ class AICG_Security {
                     'cost' => $cost,
                     'model' => $model,
                     'created_at' => current_time('mysql')
-                )
+                ),
+                array('%d', '%d', '%f', '%s', '%s')
             );
         }
     }
-    
+
     /**
      * Get usage statistics
      */
-    public function get_usage_stats($user_id = null, $days = 30) {
+    public function get_usage_stats( $user_id = null, $days = 30 ) {
         global $wpdb;
-        
-        $where = "WHERE created_at >= %s";
-        $params = array(gmdate('Y-m-d H:i:s', strtotime("-{$days} days")));
-        
-        if ($user_id) {
-            $where .= " AND user_id = %d";
-            $params[] = $user_id;
+
+        $table_name = esc_sql( $wpdb->prefix . 'aicg_usage_log' );
+        $date_limit = gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
+
+        // Generate cache key
+        $cache_key = 'aicg_usage_stats_' . ( $user_id ?: 'all' ) . '_' . $days;
+
+        if ( false !== ( $cached_stats = wp_cache_get( $cache_key ) ) ) {
+            return $cached_stats;
         }
-        
-        $base_query = "SELECT 
-            COUNT(*) as total_requests,
-            SUM(tokens_used) as total_tokens,
-            SUM(cost) as total_cost,
-            AVG(tokens_used) as avg_tokens_per_request
-        FROM {$wpdb->prefix}aicg_usage_log 
-        " . $where;
-        
-        $query = $wpdb->prepare($base_query, $params);
-        
-        return $wpdb->get_row($query);
+
+        if ( $user_id ) {
+            $query = $wpdb->prepare(
+                "SELECT COUNT(*) AS total_requests,
+                    SUM(tokens_used) AS total_tokens,
+                    SUM(cost) AS total_cost,
+                    AVG(tokens_used) AS avg_tokens_per_request
+             FROM {$table_name}
+             WHERE created_at >= %s
+             AND user_id = %d",
+                $date_limit,
+                $user_id
+            );
+        } else {
+            $query = $wpdb->prepare(
+                "SELECT COUNT(*) AS total_requests,
+                    SUM(tokens_used) AS total_tokens,
+                    SUM(cost) AS total_cost,
+                    AVG(tokens_used) AS avg_tokens_per_request
+             FROM {$table_name}
+             WHERE created_at >= %s",
+                $date_limit
+            );
+        }
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $stats = $wpdb->get_row( $query );
+
+        wp_cache_set( $cache_key, $stats, '', 300 );
+
+        return $stats;
     }
     
     /**

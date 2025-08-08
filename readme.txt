@@ -1,9 +1,9 @@
 === AI Content Classifier ===
 Contributors: mokhaled
-Tags: ai, content generator, openai, gpt, seo, content creation, automation
+Tags: ai, content generator, openai, gpt, seo
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -46,7 +46,7 @@ The plugin only sends data to OpenAI when you explicitly request content generat
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/ai-content-generator` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/ai-content-classifier` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Use the Settings->AI Content Classifier screen to configure the plugin
 4. Add your OpenAI API key (Get one at https://platform.openai.com)
@@ -89,6 +89,12 @@ Yes, the plugin is compatible with WordPress Multisite installations.
 5. SEO optimization options
 
 == Changelog ==
+
+= 1.1.2 =
+* Fixed all remaining SQL preparation errors in bulk operations, security, and REST API classes
+* Enhanced WordPress coding standards compliance with proper table name handling
+* Improved query preparation to eliminate WordPress.DB.PreparedSQL.NotPrepared violations
+* Streamlined database queries for better performance and security
 
 = 1.1.1 =
 * Critical security fixes for WordPress Plugin Check compliance

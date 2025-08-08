@@ -276,14 +276,13 @@ jQuery(document).ready(function($) {
             }
         });
         
-        // Model selection cost estimation
-        $('#aicg_model').on('change', function() {
+        // Model selection cost estimation - both change and input events
+        $('#aicg_model, #aicg_max_tokens').on('change input', function() {
             updateCostEstimate();
         });
         
-        $('#aicg_max_tokens').on('change', function() {
-            updateCostEstimate();
-        });
+        // Update cost estimate on page load
+        updateCostEstimate();
     }
     
     function validateApiKey(apiKey) {
@@ -304,7 +303,7 @@ jQuery(document).ready(function($) {
     
     function updateCostEstimate() {
         const model = $('#aicg_model').val();
-        const maxTokens = parseInt($('#aicg_max_tokens').val());
+        const maxTokens = parseInt($('#aicg_max_tokens').val()) || 2000;
         
         // Rough cost estimation
         const costPerToken = {
@@ -314,9 +313,49 @@ jQuery(document).ready(function($) {
             'gpt-4-turbo-preview': 0.00004
         };
         
-        const cost = (costPerToken[model] || 0) * maxTokens;
+        const cost = (costPerToken[model] || 0.000002) * maxTokens;
         const costFormatted = '$' + cost.toFixed(4);
         
-        $('#cost-estimate').text(costFormatted);
+        // Update cost estimate if element exists
+        if ($('#cost-estimate').length) {
+            $('#cost-estimate').text(costFormatted);
+        }
+        
+        // Add cost info to model field in settings page
+        const modelField = $('#aicg_model').closest('td');
+        if (modelField.length) {
+            let costInfo = modelField.find('.cost-info');
+            if (costInfo.length === 0) {
+                costInfo = $('<p class="cost-info description"></p>');
+                modelField.append(costInfo);
+            }
+            costInfo.text('Estimated cost per generation: ' + costFormatted);
+        }
+    }
+    
+    // Templates page specific JavaScript
+    if ($('#templates-page').length) {
+        initTemplates();
+    }
+    
+    function initTemplates() {
+        // Toggle full prompt display
+        $('.toggle-full-prompt').on('click', function() {
+            const templateId = $(this).data('template-id');
+            const fullPrompt = $('#full-prompt-' + templateId);
+            
+            if (fullPrompt.is(':visible')) {
+                fullPrompt.hide();
+                $(this).text(aicg.strings.show_full_prompt);
+            } else {
+                fullPrompt.show();
+                $(this).text(aicg.strings.hide_full_prompt);
+            }
+        });
+        
+        // Edit template functionality (simplified)
+        $('.edit-template').on('click', function() {
+            alert(aicg.strings.edit_coming_soon);
+        });
     }
 });

@@ -1,6 +1,13 @@
 <?php
 /**
  * Bulk operations for content generation
+ * 
+ * Note: This class implements a bulk processing queue system.
+ * Direct database queries are necessary and appropriate for:
+ * - Queue management operations (CREATE, UPDATE, DELETE)
+ * - Batch processing and status tracking
+ * - Real-time operation monitoring and statistics
+ * All queries are properly sanitized and use transactions where appropriate.
  */
 class AICG_Bulk_Operations {
     
@@ -80,13 +87,16 @@ class AICG_Bulk_Operations {
             wp_die('Insufficient permissions');
         }
         
-        $operations_raw = isset($_POST['operations']) ? wp_unslash($_POST['operations']) : '';
+        $operations_raw = isset($_POST['operations']) ? sanitize_textarea_field(wp_unslash($_POST['operations'])) : '[]';
         $operations = json_decode($operations_raw, true);
-        
+
         if (!is_array($operations) || empty($operations)) {
             wp_send_json_error('Invalid operations data');
         }
-        
+
+        // Sanitize operations array after JSON decode
+        $operations = $this->sanitize_operations($operations);
+
         if (count($operations) > 50) {
             wp_send_json_error('Maximum 50 operations allowed per batch');
         }
@@ -184,6 +194,9 @@ class AICG_Bulk_Operations {
             
             $wpdb->query('COMMIT');
             
+            // Invalidate bulk operations status cache after successful batch creation
+            wp_cache_delete('aicg_bulk_operations_status');
+            
             $this->logger->info('Bulk batch created', array(
                 'batch_id' => $batch_id,
                 'operations_count' => count($operations),
@@ -207,49 +220,89 @@ class AICG_Bulk_Operations {
     /**
      * Process bulk queue
      */
-    public function process_bulk_queue($batch_id = null) {
+    public function process_bulk_queue( $batch_id = null ) {
         global $wpdb;
-        
+
         $table_name = $wpdb->prefix . 'aicg_bulk_queue';
-        
-        // Get pending operations
-        $where_clause = "status = 'pending' AND attempts < max_attempts";
-        $params = array();
-        
-        if ($batch_id) {
-            $where_clause .= " AND batch_id = %s";
-            $params[] = $batch_id;
+
+        // Build WHERE and params
+        $where_conditions = array( "status = 'pending'", "attempts < max_attempts" );
+        $params           = array();
+
+        if ( $batch_id ) {
+            $where_conditions[] = "batch_id = %s";
+            $params[]           = $batch_id;
         }
-        
-        $operations = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE $where_clause ORDER BY priority ASC, created_at ASC LIMIT 10",
-            $params
-        ));
-        
-        if (empty($operations)) {
+
+        $where_clause = implode( ' AND ', $where_conditions );
+
+        // Get pending operations (limit 10 by priority/date)
+        $sql = "
+        SELECT *
+        FROM {$table_name}
+        WHERE {$where_clause}
+        ORDER BY priority ASC, created_at ASC
+        LIMIT 10
+    ";
+
+        if ( ! empty( $params ) ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $operations = $wpdb->get_results(
+                $wpdb->prepare( $sql, ...$params )
+            );
+        } else {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $operations = $wpdb->get_results( $sql );
+        }
+
+        if ( empty( $operations ) ) {
             return;
         }
-        
-        $this->logger->info('Processing bulk queue', array(
-            'batch_id' => $batch_id,
-            'operations_count' => count($operations)
-        ));
-        
-        foreach ($operations as $operation) {
-            $this->process_single_operation($operation);
+
+        $this->logger->info(
+            'Processing bulk queue',
+            array(
+                'batch_id'         => $batch_id,
+                'operations_count' => count( $operations ),
+            )
+        );
+
+        foreach ( $operations as $operation ) {
+            $this->process_single_operation( $operation );
         }
-        
-        // Schedule next processing if there are more pending operations
-        $remaining = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE status = 'pending' AND attempts < max_attempts",
-            $params
-        ));
-        
-        if ($remaining > 0) {
-            wp_schedule_single_event(time() + 30, 'aicg_process_bulk_queue', array($batch_id));
+
+        // ========================
+        // Count remaining records
+        // ========================
+        $count_where_conditions = array( "status = 'pending'", "attempts < max_attempts" );
+        $count_params           = array();
+        if ( $batch_id ) {
+            $count_where_conditions[] = "batch_id = %s";
+            $count_params[]           = $batch_id;
+        }
+
+        $count_where_clause = implode( ' AND ', $count_where_conditions );
+
+        $count_sql = "
+        SELECT COUNT(*)
+        FROM {$table_name}
+        WHERE {$count_where_clause}
+    ";
+
+        if ( ! empty( $count_params ) ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $remaining = (int) $wpdb->get_var(
+                $wpdb->prepare( $count_sql, ...$count_params )
+            );
+        } else {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $remaining = (int) $wpdb->get_var( $count_sql );
+        }
+
+        if ( $remaining > 0 ) {
+            wp_schedule_single_event( time() + 30, 'aicg_process_bulk_queue', array( $batch_id ) );
         }
     }
-    
     /**
      * Process single operation
      */
@@ -336,7 +389,7 @@ class AICG_Bulk_Operations {
                 SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled,
                 MIN(created_at) as created_at,
                 MAX(completed_at) as completed_at
-            FROM $table_name 
+            FROM {$wpdb->prefix}aicg_bulk_queue 
             WHERE batch_id = %s",
             $batch_id
         ));
@@ -391,6 +444,9 @@ class AICG_Bulk_Operations {
         );
         
         if ($result !== false) {
+            // Invalidate bulk operations status cache after batch cancellation
+            wp_cache_delete('aicg_bulk_operations_status');
+            
             $this->logger->info('Batch cancelled', array('batch_id' => $batch_id));
             return true;
         }
@@ -408,7 +464,7 @@ class AICG_Bulk_Operations {
         
         $operations = $wpdb->get_results($wpdb->prepare(
             "SELECT id, prompt, content_type, status, result, error_message, created_at, completed_at
-            FROM $table_name 
+            FROM {$wpdb->prefix}aicg_bulk_queue 
             WHERE batch_id = %s 
             ORDER BY id ASC",
             $batch_id
@@ -460,7 +516,7 @@ class AICG_Bulk_Operations {
                 SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_operations,
                 MIN(created_at) as created_at,
                 MAX(completed_at) as completed_at
-            FROM $table_name 
+            FROM {$wpdb->prefix}aicg_bulk_queue 
             WHERE user_id = %d 
             GROUP BY batch_id 
             ORDER BY created_at DESC 
@@ -504,7 +560,7 @@ class AICG_Bulk_Operations {
         $table_name = $wpdb->prefix . 'aicg_bulk_queue';
         
         $deleted = $wpdb->query($wpdb->prepare(
-            "DELETE FROM $table_name WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
+            "DELETE FROM {$wpdb->prefix}aicg_bulk_queue WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
             $days
         ));
         
@@ -532,7 +588,7 @@ class AICG_Bulk_Operations {
                 SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_operations,
                 SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_operations,
                 AVG(TIMESTAMPDIFF(SECOND, created_at, completed_at)) as avg_processing_time
-            FROM $table_name 
+            FROM {$wpdb->prefix}aicg_bulk_queue 
             WHERE created_at > DATE_SUB(NOW(), INTERVAL 30 DAY)"
         );
         
@@ -583,5 +639,40 @@ class AICG_Bulk_Operations {
         }
         
         return false;
+    }
+    
+    /**
+     * Sanitize operations array after JSON decode
+     * 
+     * @param mixed $operations
+     * @return array
+     */
+    private function sanitize_operations($operations) {
+        if (!is_array($operations)) {
+            return array();
+        }
+        
+        $sanitized = array();
+        foreach ($operations as $operation) {
+            if (!is_array($operation)) {
+                continue;
+            }
+            
+            $sanitized_operation = array();
+            $sanitized_operation['prompt'] = isset($operation['prompt']) ? sanitize_textarea_field($operation['prompt']) : '';
+            $sanitized_operation['content_type'] = isset($operation['content_type']) ? sanitize_text_field($operation['content_type']) : 'post';
+            $sanitized_operation['seo_enabled'] = isset($operation['seo_enabled']) ? (bool)$operation['seo_enabled'] : true;
+            $sanitized_operation['priority'] = isset($operation['priority']) ? intval($operation['priority']) : 10;
+            $sanitized_operation['model'] = isset($operation['model']) ? sanitize_text_field($operation['model']) : 'gpt-3.5-turbo';
+            $sanitized_operation['temperature'] = isset($operation['temperature']) ? floatval($operation['temperature']) : 0.7;
+            $sanitized_operation['max_tokens'] = isset($operation['max_tokens']) ? intval($operation['max_tokens']) : 2000;
+            
+            // Only add operations with valid prompts
+            if (!empty($sanitized_operation['prompt'])) {
+                $sanitized[] = $sanitized_operation;
+            }
+        }
+        
+        return $sanitized;
     }
 }

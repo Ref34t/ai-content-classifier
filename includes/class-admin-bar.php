@@ -165,7 +165,7 @@ class AICG_Admin_Bar {
         ));
         
         // Quick actions for current post (if editing)
-        if (is_admin() && isset($_GET['post']) && current_user_can('edit_post', sanitize_text_field(wp_unslash($_GET['post'])))) {
+        if (is_admin() && isset($_GET['post']) && isset($_GET['action']) && $_GET['action'] === 'edit' && current_user_can('edit_post', sanitize_text_field(wp_unslash($_GET['post'])))) {
             $post_id = intval(sanitize_text_field(wp_unslash($_GET['post'])));
             $post = get_post($post_id);
             
@@ -225,7 +225,7 @@ class AICG_Admin_Bar {
             var modal = $('<div id=\"aicg-quick-modal\" style=\"position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999999; display: flex; align-items: center; justify-content: center;\"></div>');
             
             var content = $('<div style=\"background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%;\"></div>');
-            content.html('<h2>" . __('Quick Generate', 'ai-content-classifier') . "</h2><form id=\"aicg-quick-form\"><textarea id=\"aicg-quick-prompt\" placeholder=\"" . __('Enter your prompt here...', 'ai-content-classifier') . "\" style=\"width: 100%; height: 100px; margin-bottom: 10px;\"></textarea><br><button type=\"submit\">" . __('Generate', 'ai-content-classifier') . "</button> <button type=\"button\" onclick=\"$(\\\"#aicg-quick-modal\\\").remove()\">" . __('Cancel', 'ai-content-classifier') . "</button></form>');
+            content.html('<h2>" . esc_js(__('Quick Generate', 'ai-content-classifier')) . "</h2><form id=\"aicg-quick-form\"><textarea id=\"aicg-quick-prompt\" placeholder=\"" . esc_js(__('Enter your prompt here...', 'ai-content-classifier')) . "\" style=\"width: 100%; height: 100px; margin-bottom: 10px;\"></textarea><br><button type=\"submit\">" . esc_js(__('Generate', 'ai-content-classifier')) . "</button> <button type=\"button\" onclick=\"$(\\\"#aicg-quick-modal\\\").remove()\">" . esc_js(__('Cancel', 'ai-content-classifier')) . "</button></form>');
             
             modal.append(content);
             $('body').append(modal);
@@ -243,13 +243,13 @@ class AICG_Admin_Bar {
             $.post(ajaxurl, {
                 action: 'aicg_quick_generate',
                 prompt: prompt,
-                nonce: '" . wp_create_nonce('aicg_quick_generate') . "'
+                nonce: '" . esc_js(wp_create_nonce('aicg_quick_generate')) . "'
             }).done(function(response) {
                 if (response.success) {
-                    alert('" . __('Content generated successfully!', 'ai-content-classifier') . "');
+                    alert('" . esc_js(__('Content generated successfully!', 'ai-content-classifier')) . "');
                     $('#aicg-quick-modal').remove();
                 } else {
-                    alert('" . __('Error: ', 'ai-content-classifier') . "' + response.data);
+                    alert('" . esc_js(__('Error: ', 'ai-content-classifier')) . "' + response.data);
                 }
             });
         }
@@ -257,14 +257,14 @@ class AICG_Admin_Bar {
         function aicg_show_stats_modal() {
             $.post(ajaxurl, {
                 action: 'aicg_admin_bar_stats',
-                nonce: '" . wp_create_nonce('aicg_admin_bar_stats') . "'
+                nonce: '" . esc_js(wp_create_nonce('aicg_admin_bar_stats')) . "'
             }).done(function(response) {
                 if (response.success) {
                     var stats = response.data;
                     var modal = $('<div id=\"aicg-stats-modal\" style=\"position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999999; display: flex; align-items: center; justify-content: center;\"></div>');
                     
                     var content = $('<div style=\"background: white; padding: 20px; border-radius: 8px; max-width: 400px; width: 90%;\"></div>');
-                    content.html('<h2>" . __('Usage Stats', 'ai-content-classifier') . "</h2><ul><li>" . __('Today: ', 'ai-content-classifier') . "' + stats.today_generations + ' " . __('generations', 'ai-content-classifier') . "</li><li>" . __('This week: ', 'ai-content-classifier') . "' + stats.week_generations + ' " . __('generations', 'ai-content-classifier') . "</li><li>" . __('Total cost: $', 'ai-content-classifier') . "' + stats.total_cost + '</li><li>" . __('Cache hits: ', 'ai-content-classifier') . "' + stats.cache_hits + '</li></ul><button onclick=\"$(\\\"#aicg-stats-modal\\\").remove()\">" . __('Close', 'ai-content-classifier') . "</button>');
+                    content.html('<h2>" . esc_js(__('Usage Stats', 'ai-content-classifier')) . "</h2><ul><li>" . esc_js(__('Today: ', 'ai-content-classifier')) . "' + stats.today_generations + ' " . esc_js(__('generations', 'ai-content-classifier')) . "</li><li>" . esc_js(__('This week: ', 'ai-content-classifier')) . "' + stats.week_generations + ' " . esc_js(__('generations', 'ai-content-classifier')) . "</li><li>" . esc_js(__('Total cost: $', 'ai-content-classifier')) . "' + stats.total_cost + '</li><li>" . esc_js(__('Cache hits: ', 'ai-content-classifier')) . "' + stats.cache_hits + '</li></ul><button onclick=\"$(\\\"#aicg-stats-modal\\\").remove()\">" . esc_js(__('Close', 'ai-content-classifier')) . "</button>');
                     
                     modal.append(content);
                     $('body').append(modal);
@@ -273,9 +273,18 @@ class AICG_Admin_Bar {
         }
         
         function aicg_enhance_post(postId) {
-            if (confirm('" . __('This will enhance the current post with AI-generated content. Continue?', 'ai-content-classifier') . "')) {
-                // Implementation would go here
-                alert('" . __('Post enhancement feature coming soon!', 'ai-content-classifier') . "');
+            if (confirm('" . esc_js(__('This will enhance the current post with AI-generated content. Continue?', 'ai-content-classifier')) . "')) {
+                $.post(ajaxurl, {
+                    action: 'aicg_enhance_post',
+                    post_id: postId,
+                    nonce: '" . esc_js(wp_create_nonce('aicg_enhance_post')) . "'
+                }).done(function(response) {
+                    if (response.success) {
+                        alert('" . esc_js(__('Post enhanced successfully!', 'ai-content-classifier')) . "');
+                    } else {
+                        alert('" . esc_js(__('Error: ', 'ai-content-classifier')) . "' + response.data);
+                    }
+                });
             }
         }
         
@@ -330,63 +339,59 @@ class AICG_Admin_Bar {
      * AJAX handler for quick generate
      */
     public function ajax_quick_generate() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_quick_generate')) {
-            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
-        }
-        
+        check_ajax_referer('aicg_quick_generate', 'nonce');
+
         if (!current_user_can('edit_posts')) {
             wp_die(esc_html__('Insufficient permissions', 'ai-content-classifier'));
         }
-        
+
         $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
-        
+
         if (empty($prompt)) {
             wp_send_json_error(__('Prompt is required', 'ai-content-classifier'));
         }
-        
+
         try {
             $generator = AI_Content_Generator::get_instance();
             $result = $generator->generate_content($prompt, 'post', true);
-            
+
             if (is_wp_error($result)) {
                 wp_send_json_error($result->get_error_message());
             }
-            
+
             // Store in user meta for quick access
             $user_id = get_current_user_id();
             $quick_results = get_user_meta($user_id, 'aicg_quick_results', true);
-            
+
             if (!is_array($quick_results)) {
                 $quick_results = array();
             }
-            
+
             array_unshift($quick_results, array(
                 'prompt' => $prompt,
                 'result' => $result,
                 'timestamp' => time()
             ));
-            
+
             // Keep only last 5 results
             $quick_results = array_slice($quick_results, 0, 5);
             update_user_meta($user_id, 'aicg_quick_results', $quick_results);
-            
+
             wp_send_json_success($result);
-            
+
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
         }
     }
-    
+
     /**
      * AJAX handler for admin bar stats
      */
     public function ajax_admin_bar_stats() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_admin_bar_stats')) {
-            wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
-        }
-        
+        check_ajax_referer('aicg_admin_bar_stats', 'nonce');
+
         $stats = $this->get_detailed_stats();
-        
+
         wp_send_json_success($stats);
     }
     
@@ -396,21 +401,6 @@ class AICG_Admin_Bar {
     private function get_quick_stats() {
         $user_id = get_current_user_id();
         
-        // Get today's usage
-        $today_start = gmdate('Y-m-d 00:00:00');
-        $today_end = gmdate('Y-m-d 23:59:59');
-        
-        global $wpdb;
-        $usage_table = $wpdb->prefix . 'aicg_usage_log';
-        
-        // Check if table exists
-        if ($wpdb->get_var("SHOW TABLES LIKE '$usage_table'") != $usage_table) {
-            return array(
-                'today_generations' => 0,
-                'today_cost' => 0.0
-            );
-        }
-        
         // If user is not logged in, show 0 stats
         if (!$user_id) {
             return array(
@@ -419,19 +409,57 @@ class AICG_Admin_Bar {
             );
         }
         
+        // Check cache first
+        $cache_key = 'aicg_quick_stats_' . $user_id . '_' . gmdate('Y-m-d');
+        $cached_stats = wp_cache_get($cache_key);
+        
+        if ($cached_stats !== false) {
+            return $cached_stats;
+        }
+        
+        // Get today's usage
+        $today_start = gmdate('Y-m-d 00:00:00');
+        $today_end = gmdate('Y-m-d 23:59:59');
+        
+        global $wpdb;
+        $usage_table = $wpdb->prefix . 'aicg_usage_log';
+        
+        // Check if table exists with caching
+        $table_exists_key = 'aicg_usage_table_exists';
+        $table_exists = wp_cache_get($table_exists_key);
+        
+        if ($table_exists === false) {
+            $table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $usage_table)) == $usage_table;
+            wp_cache_set($table_exists_key, $table_exists, '', 300);
+        }
+        
+        if (!$table_exists) {
+            $result = array(
+                'today_generations' => 0,
+                'today_cost' => 0.0
+            );
+            wp_cache_set($cache_key, $result, '', 300);
+            return $result;
+        }
+        
         $today_stats = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) as generations, COALESCE(SUM(cost), 0) as cost
-            FROM $usage_table 
+            FROM {$wpdb->prefix}aicg_usage_log 
             WHERE user_id = %d AND created_at BETWEEN %s AND %s",
             $user_id,
             $today_start,
             $today_end
         ));
         
-        return array(
+        $result = array(
             'today_generations' => (int)$today_stats->generations,
             'today_cost' => (float)$today_stats->cost
         );
+        
+        // Cache for 5 minutes
+        wp_cache_set($cache_key, $result, '', 300);
+        
+        return $result;
     }
     
     /**
@@ -440,12 +468,28 @@ class AICG_Admin_Bar {
     private function get_detailed_stats() {
         $user_id = get_current_user_id();
         
+        // Check cache first
+        $cache_key = 'aicg_detailed_stats_' . $user_id . '_' . gmdate('Y-m-d-H');
+        $cached_stats = wp_cache_get($cache_key);
+        
+        if ($cached_stats !== false) {
+            return $cached_stats;
+        }
+        
         global $wpdb;
         $usage_table = $wpdb->prefix . 'aicg_usage_log';
         
-        // Check if table exists
-        if ($wpdb->get_var("SHOW TABLES LIKE '$usage_table'") != $usage_table) {
-            return array(
+        // Check if table exists with caching
+        $table_exists_key = 'aicg_usage_table_exists';
+        $table_exists = wp_cache_get($table_exists_key);
+        
+        if ($table_exists === false) {
+            $table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $usage_table)) == $usage_table;
+            wp_cache_set($table_exists_key, $table_exists, '', 300);
+        }
+        
+        if (!$table_exists) {
+            $result = array(
                 'today_generations' => 0,
                 'today_cost' => '0.000',
                 'week_generations' => 0,
@@ -455,6 +499,8 @@ class AICG_Admin_Bar {
                 'cache_hits' => 0,
                 'cache_hit_rate' => 0.0
             );
+            wp_cache_set($cache_key, $result, '', 300);
+            return $result;
         }
         
         // Today's stats
@@ -463,7 +509,7 @@ class AICG_Admin_Bar {
         
         $today_stats = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) as generations, COALESCE(SUM(cost), 0) as cost
-            FROM $usage_table 
+            FROM {$wpdb->prefix}aicg_usage_log 
             WHERE user_id = %d AND created_at BETWEEN %s AND %s",
             $user_id,
             $today_start,
@@ -475,7 +521,7 @@ class AICG_Admin_Bar {
         
         $week_stats = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) as generations, COALESCE(SUM(cost), 0) as cost
-            FROM $usage_table 
+            FROM {$wpdb->prefix}aicg_usage_log 
             WHERE user_id = %d AND created_at >= %s",
             $user_id,
             $week_start
@@ -484,7 +530,7 @@ class AICG_Admin_Bar {
         // Total stats
         $total_stats = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) as generations, COALESCE(SUM(cost), 0) as cost
-            FROM $usage_table 
+            FROM {$wpdb->prefix}aicg_usage_log 
             WHERE user_id = %d",
             $user_id
         ));
@@ -503,7 +549,7 @@ class AICG_Admin_Bar {
             }
         }
         
-        return array(
+        $result = array(
             'today_generations' => (int)$today_stats->generations,
             'today_cost' => number_format((float)$today_stats->cost, 3),
             'week_generations' => (int)$week_stats->generations,
@@ -513,20 +559,38 @@ class AICG_Admin_Bar {
             'cache_hits' => $cache_stats['total_hits'],
             'cache_hit_rate' => $cache_stats['hit_rate']
         );
+        
+        // Cache for 1 hour
+        wp_cache_set($cache_key, $result, '', 3600);
+        
+        return $result;
     }
     
     /**
      * Get recent templates
      */
     private function get_recent_templates($limit = 5) {
+        // Check cache first
+        $cache_key = 'aicg_recent_templates_' . $limit;
+        $cached_templates = wp_cache_get($cache_key);
+        
+        if ($cached_templates !== false) {
+            return $cached_templates;
+        }
+        
         global $wpdb;
         
-        return $wpdb->get_results($wpdb->prepare(
+        $templates = $wpdb->get_results($wpdb->prepare(
             "SELECT id, name FROM {$wpdb->prefix}aicg_templates 
             ORDER BY created_at DESC 
             LIMIT %d",
             $limit
         ));
+        
+        // Cache for 10 minutes
+        wp_cache_set($cache_key, $templates, '', 600);
+        
+        return $templates;
     }
     
     /**
@@ -560,6 +624,14 @@ class AICG_Admin_Bar {
      * Check if bulk operations are running
      */
     private function get_bulk_operations_status() {
+        // Check cache first
+        $cache_key = 'aicg_bulk_operations_status';
+        $cached_count = wp_cache_get($cache_key);
+        
+        if ($cached_count !== false) {
+            return (int)$cached_count;
+        }
+        
         global $wpdb;
         
         $pending_count = $wpdb->get_var(
@@ -567,7 +639,12 @@ class AICG_Admin_Bar {
             WHERE status IN ('pending', 'processing')"
         );
         
-        return (int)$pending_count;
+        $count = (int)$pending_count;
+        
+        // Cache for 1 minute (bulk operations status changes frequently)
+        wp_cache_set($cache_key, $count, '', 60);
+        
+        return $count;
     }
     
     /**

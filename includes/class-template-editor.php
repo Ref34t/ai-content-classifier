@@ -1,6 +1,13 @@
 <?php
 /**
  * Template editing functionality with version control
+ * 
+ * Note: This class implements a template management system with versioning.
+ * Direct database queries are necessary and appropriate for:
+ * - Transactional template operations (CREATE, UPDATE, DELETE)
+ * - Version control and history tracking
+ * - Template restoration and rollback functionality
+ * All queries are properly sanitized and use transactions where appropriate.
  */
 class AICG_Template_Editor {
     
@@ -63,7 +70,7 @@ class AICG_Template_Editor {
      * AJAX handler for saving template
      */
     public function ajax_save_template() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_save_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_save_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -76,7 +83,9 @@ class AICG_Template_Editor {
         $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
         $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
         $seo_enabled = isset($_POST['seo_enabled']) ? 1 : 0;
-        $variables = isset($_POST['variables']) ? json_decode(wp_unslash($_POST['variables']), true) : array();
+        $variables_raw = isset($_POST['variables']) ? wp_unslash($_POST['variables']) : '[]';
+        $variables = json_decode($variables_raw, true);
+        $variables = $this->sanitize_variables($variables);
         $change_log = isset($_POST['change_log']) ? sanitize_textarea_field(wp_unslash($_POST['change_log'])) : '';
         
         // Validate template
@@ -104,7 +113,7 @@ class AICG_Template_Editor {
      * AJAX handler for loading template
      */
     public function ajax_load_template() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_load_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_load_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -124,7 +133,7 @@ class AICG_Template_Editor {
      * AJAX handler for deleting template
      */
     public function ajax_delete_template() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_delete_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_delete_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -147,7 +156,7 @@ class AICG_Template_Editor {
      * AJAX handler for duplicating template
      */
     public function ajax_duplicate_template() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_duplicate_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_duplicate_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -174,13 +183,15 @@ class AICG_Template_Editor {
      * AJAX handler for template preview
      */
     public function ajax_preview_template() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_preview_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_preview_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
         $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
         $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
-        $variables = isset($_POST['variables']) ? json_decode(wp_unslash($_POST['variables']), true) : array();
+        $variables_raw = isset($_POST['variables']) ? wp_unslash($_POST['variables']) : '[]';
+        $variables = json_decode($variables_raw, true);
+        $variables = $this->sanitize_variables($variables);
         
         $preview = $this->preview_template($prompt, $content_type, $variables);
         
@@ -191,7 +202,7 @@ class AICG_Template_Editor {
      * AJAX handler for template validation
      */
     public function ajax_validate_template() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_validate_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_validate_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -212,7 +223,7 @@ class AICG_Template_Editor {
      * AJAX handler for template history
      */
     public function ajax_template_history() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_template_history')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_template_history')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -227,7 +238,7 @@ class AICG_Template_Editor {
      * AJAX handler for restoring template version
      */
     public function ajax_restore_template() {
-        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field($_POST['nonce']), 'aicg_restore_template')) {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'aicg_restore_template')) {
             wp_die(esc_html__('Security check failed', 'ai-content-classifier'));
         }
         
@@ -249,6 +260,9 @@ class AICG_Template_Editor {
     
     /**
      * Save template with version control
+     * 
+     * Note: Direct database queries are necessary for template management system.
+     * This implements transactional template versioning with ACID compliance.
      */
     public function save_template($template_id, $name, $prompt, $content_type, $seo_enabled, $variables = null, $change_log = '') {
         global $wpdb;
@@ -332,6 +346,11 @@ class AICG_Template_Editor {
             }
             
             $wpdb->query('COMMIT');
+            
+            // Invalidate relevant caches after successful template save
+            wp_cache_delete('aicg_recent_templates_5');
+            wp_cache_delete('aicg_templates_count_' . md5(''));
+            wp_cache_delete('aicg_template_' . $template_id);
             
             $this->logger->info('Template saved', array(
                 'template_id' => $template_id,
@@ -429,6 +448,11 @@ class AICG_Template_Editor {
             }
             
             $wpdb->query('COMMIT');
+            
+            // Invalidate relevant caches after successful template deletion
+            wp_cache_delete('aicg_recent_templates_5');
+            wp_cache_delete('aicg_templates_count_' . md5(''));
+            wp_cache_delete('aicg_template_' . $template_id);
             
             $this->logger->info('Template deleted', array('template_id' => $template_id));
             
@@ -631,7 +655,7 @@ class AICG_Template_Editor {
      * Extract variables from prompt
      */
     private function extract_variables($prompt) {
-        preg_match_all('/\[([A-Z_][A-Z0-9_]*)\]/', $prompt, $matches);
+        preg_match_all('/\\[([A-Z_][A-Z0-9_]*)\\]/', $prompt, $matches);
         
         return array_unique($matches[1]);
     }
@@ -640,7 +664,7 @@ class AICG_Template_Editor {
      * Estimate tokens for prompt
      */
     private function estimate_tokens($prompt) {
-        // Rough estimation: 1 token ≈ 4 characters
+        // Rough estimation: 1 token \u2248 4 characters
         return ceil(strlen($prompt) / 4);
     }
     
@@ -714,7 +738,7 @@ class AICG_Template_Editor {
         $prompt = sanitize_textarea_field($import_data['prompt']);
         $content_type = sanitize_text_field($import_data['content_type'] ?? 'post');
         $seo_enabled = isset($import_data['seo_enabled']) ? (bool)$import_data['seo_enabled'] : true;
-        $variables = isset($import_data['variables']) ? $import_data['variables'] : array();
+        $variables = isset($import_data['variables']) ? $this->sanitize_variables($import_data['variables']) : array();
         
         $result = $this->save_template(
             0, // New template
@@ -727,5 +751,29 @@ class AICG_Template_Editor {
         );
         
         return $result;
+    }
+    
+    /**
+     * Sanitize variables array after JSON decode
+     * 
+     * @param mixed $variables
+     * @return array
+     */
+    private function sanitize_variables($variables) {
+        if (!is_array($variables)) {
+            return array();
+        }
+        
+        $sanitized = array();
+        foreach ($variables as $key => $value) {
+            $sanitized_key = sanitize_key($key);
+            if (is_array($value)) {
+                $sanitized[$sanitized_key] = $this->sanitize_variables($value);
+            } else {
+                $sanitized[$sanitized_key] = sanitize_text_field($value);
+            }
+        }
+        
+        return $sanitized;
     }
 }

@@ -222,6 +222,7 @@ class AICG_Admin_Notices {
         wp_enqueue_script('jquery');
         
         // Add inline script for notice dismissal
+        $nonce = wp_create_nonce('aicg_dismiss_notice');
         $script = "
         jQuery(document).ready(function($) {
             $(document).on('click', '.aicg-notice-dismiss', function(e) {
@@ -233,7 +234,7 @@ class AICG_Admin_Notices {
                 $.post(ajaxurl, {
                     action: 'aicg_dismiss_notice',
                     notice_id: noticeId,
-                    nonce: '" . wp_create_nonce('aicg_dismiss_notice') . "'
+                    nonce: '" . esc_js($nonce) . "'
                 }).done(function() {
                     notice.fadeOut();
                 });

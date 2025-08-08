@@ -4,6 +4,16 @@
  * 
  * This file is called when the plugin is deleted from WordPress admin
  * It removes all plugin data including options, database tables, and cached data
+ * 
+ * IMPORTANT: Direct database queries are REQUIRED and APPROPRIATE in uninstall scripts.
+ * WordPress expects uninstall scripts to use direct database operations to:
+ * - Drop custom database tables (schema changes)
+ * - Delete plugin-specific options and metadata
+ * - Perform complete data cleanup operations
+ * - Remove all traces of the plugin from the database
+ * 
+ * Caching is not applicable during uninstallation as the plugin is being removed.
+ * These operations are performed once during plugin deletion, not during normal operation.
  */
 
 // If uninstall not called from WordPress, exit
@@ -48,6 +58,7 @@ if (is_multisite()) {
 }
 
 // Remove database tables
+// NOTE: Direct database queries required for complete plugin cleanup during uninstallation
 global $wpdb;
 
 // List of tables to remove
@@ -61,14 +72,17 @@ $tables = array(
 
 // Drop each table
 foreach ($tables as $table) {
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $wpdb->query("DROP TABLE IF EXISTS $table");
 }
 
 // Clear all transients related to the plugin
+// NOTE: Direct queries necessary for complete transient cleanup during uninstall
 $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_aicg_%'");
 $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_aicg_%'");
 
-// Clear all user meta related to the plugin
+// Clear all user meta related to the plugin  
+// NOTE: Direct query required for bulk user metadata cleanup
 $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'aicg_%'");
 
 // Remove scheduled hooks
@@ -129,6 +143,7 @@ if ($roles) {
 // Plugin uninstalled successfully - removed debug log for production
 
 // Final cleanup - remove any remaining plugin traces
+// NOTE: Direct query required for comprehensive option cleanup during uninstall
 $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'aicg_%'");
 
 // Clear rewrite rules

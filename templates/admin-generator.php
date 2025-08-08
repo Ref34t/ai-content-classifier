@@ -8,9 +8,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Get saved templates
-global $wpdb;
-$templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
+// Get saved templates with caching
+$cache_key = 'aicg_all_templates_generator';
+$templates = wp_cache_get($cache_key);
+
+if ($templates === false) {
+    global $wpdb;
+    $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
+    wp_cache_set($cache_key, $templates, '', 300); // Cache for 5 minutes
+}
 ?>
 
 <div class="wrap">
@@ -66,7 +72,7 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
                                               id="prompt" 
                                               rows="6" 
                                               class="large-text"
-                                              placeholder="<?php esc_attresc_html_e('Describe what content you want to generate...', 'ai-content-classifier'); ?>"></textarea>
+                                              placeholder="<?php esc_attr_e('Describe what content you want to generate...', 'ai-content-classifier'); ?>"></textarea>
                                     <p class="description">
                                         <?php esc_html_e('Be specific about topic, tone, length, and any key points to include.', 'ai-content-classifier'); ?>
                                     </p>
@@ -183,20 +189,26 @@ $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORD
                     
                     $usage_table = $wpdb->prefix . 'aicg_usage_log';
                     
-                    // Check if table exists and get stats
-                    if ($wpdb->get_var("SHOW TABLES LIKE '$usage_table'") == $usage_table && $user_id) {
+                    // Check if table exists and get stats with caching
+                    $stats_cache_key = 'aicg_generator_stats_' . $user_id . '_' . gmdate('Y-m-d');
+                    $today_stats = wp_cache_get($stats_cache_key);
+                    
+                    if ($today_stats === false && $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $usage_table)) == $usage_table && $user_id) {
                         $today_stats = $wpdb->get_row($wpdb->prepare(
                             "SELECT 
                                 COUNT(*) as generations, 
                                 COALESCE(SUM(cost), 0) as cost,
                                 COALESCE(SUM(tokens_used), 0) as tokens
-                            FROM $usage_table 
+                            FROM {$wpdb->prefix}aicg_usage_log 
                             WHERE user_id = %d AND created_at BETWEEN %s AND %s",
                             $user_id,
                             $today_start,
                             $today_end
                         ));
-                        
+                        wp_cache_set($stats_cache_key, $today_stats, '', 300); // Cache for 5 minutes
+                    }
+                    
+                    if ($today_stats) {
                         $generations = (int)$today_stats->generations;
                         $cost = (float)$today_stats->cost;
                         $tokens = (int)$today_stats->tokens;

@@ -87,11 +87,12 @@ class AICG_Cache {
         }
         
         // Try database cache
+        // Note: Direct database queries are required for custom cache system functionality
         global $wpdb;
         $table_name = $wpdb->prefix . 'aicg_cache';
         
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT cache_value, expiry_time, hit_count FROM $table_name 
+            "SELECT cache_value, expiry_time, hit_count FROM {$wpdb->prefix}aicg_cache 
             WHERE cache_key = %s AND cache_group = %s AND expiry_time > NOW()",
             $key, $group
         ));
@@ -194,7 +195,7 @@ class AICG_Cache {
         if ($group) {
             $result = $wpdb->delete($table_name, array('cache_group' => $group));
         } else {
-            $result = $wpdb->query("TRUNCATE TABLE $table_name");
+            $result = $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}aicg_cache");
         }
         
         if ($result) {
@@ -213,7 +214,7 @@ class AICG_Cache {
         $table_name = $wpdb->prefix . 'aicg_cache';
         
         $deleted = $wpdb->query(
-            "DELETE FROM $table_name WHERE expiry_time < NOW()"
+            "DELETE FROM {$wpdb->prefix}aicg_cache WHERE expiry_time < NOW()"
         );
         
         if ($deleted > 0) {
@@ -237,7 +238,7 @@ class AICG_Cache {
                 AVG(hit_count) as avg_hits,
                 COUNT(CASE WHEN expiry_time > NOW() THEN 1 END) as active_entries,
                 COUNT(CASE WHEN expiry_time <= NOW() THEN 1 END) as expired_entries
-            FROM $table_name
+            FROM {$wpdb->prefix}aicg_cache
         ");
         
         if (!$stats) {
@@ -270,12 +271,12 @@ class AICG_Cache {
         global $wpdb;
         $table_name = $wpdb->prefix . 'aicg_cache';
         
-        $size = $wpdb->get_var("
+        $size = $wpdb->get_var($wpdb->prepare("
             SELECT ROUND(((data_length + index_length) / 1024 / 1024), 2) as size_mb 
             FROM information_schema.tables 
             WHERE table_schema = DATABASE() 
-            AND table_name = '$table_name'
-        ");
+            AND table_name = %s
+        ", $table_name));
         
         return $size ? $size : 0;
     }
@@ -289,7 +290,7 @@ class AICG_Cache {
         
         return $wpdb->get_results($wpdb->prepare("
             SELECT cache_key, cache_group, hit_count, created_time, expiry_time
-            FROM $table_name
+            FROM {$wpdb->prefix}aicg_cache
             WHERE expiry_time > NOW()
             ORDER BY hit_count DESC
             LIMIT %d
@@ -306,7 +307,7 @@ class AICG_Cache {
         
         $popular_templates = $wpdb->get_results("
             SELECT prompt, content_type
-            FROM $templates_table
+            FROM {$wpdb->prefix}aicg_templates
             ORDER BY id DESC
             LIMIT 5
         ");

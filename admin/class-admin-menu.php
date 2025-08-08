@@ -85,7 +85,10 @@ class AICG_Admin_Menu {
             'strings' => array(
                 'generating' => __('Generating content...', 'ai-content-classifier'),
                 'error' => __('An error occurred', 'ai-content-classifier'),
-                'success' => __('Content generated successfully!', 'ai-content-classifier')
+                'success' => __('Content generated successfully!', 'ai-content-classifier'),
+                'show_full_prompt' => __('Show Full Prompt', 'ai-content-classifier'),
+                'hide_full_prompt' => __('Hide Full Prompt', 'ai-content-classifier'),
+                'edit_coming_soon' => __('Edit functionality coming soon!', 'ai-content-classifier')
             )
         ));
     }

@@ -8,9 +8,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Get templates
-global $wpdb;
-$templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
+// Get templates with caching
+$cache_key = 'aicg_all_templates_admin';
+$templates = wp_cache_get($cache_key);
+
+if ($templates === false) {
+    global $wpdb;
+    $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
+    wp_cache_set($cache_key, $templates, '', 300); // Cache for 5 minutes
+}
 
 // Handle form submissions
 if (isset($_POST['action'])) {
@@ -39,6 +45,11 @@ if (isset($_POST['action'])) {
                 );
                 
                 if ($result) {
+                    // Invalidate template caches after successful creation
+                    wp_cache_delete('aicg_all_templates_admin');
+                    wp_cache_delete('aicg_recent_templates_5');
+                    wp_cache_delete('aicg_templates_count_' . md5(''));
+                    
                     echo '<div class="notice notice-success"><p>' . esc_html__('Template created successfully!', 'ai-content-classifier') . '</p></div>';
                     // Refresh templates list
                     $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
@@ -62,6 +73,13 @@ if (isset($_POST['action'])) {
                 );
                 
                 if ($result) {
+                    // Invalidate template caches after successful deletion
+                    wp_cache_delete('aicg_all_templates_admin');
+                    wp_cache_delete('aicg_recent_templates_5');
+                    wp_cache_delete('aicg_templates_count_' . md5(''));
+                }
+                
+                if ($result) {
                     echo '<div class="notice notice-success"><p>' . esc_html__('Template deleted successfully!', 'ai-content-classifier') . '</p></div>';
                     // Refresh templates list
                     $templates = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}aicg_templates ORDER BY name ASC");
@@ -74,7 +92,7 @@ if (isset($_POST['action'])) {
 }
 ?>
 
-<div class="wrap">
+<div class="wrap" id="templates-page">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
     
     <div class="aicg-templates-wrapper">
@@ -183,7 +201,7 @@ if (isset($_POST['action'])) {
                                     </div>
                                     
                                     <div class="template-actions">
-                                        <a href="<?php echo esc_url(admin_url('admin.php?page=ai-content-generator&template=' . $template->id); ?>" 
+                                        <a href="<?php echo esc_url(admin_url('admin.php?page=ai-content-generator&template=' . $template->id)); ?>"
                                            class="button button-primary">
                                             <?php esc_html_e('Use Template', 'ai-content-classifier'); ?>
                                         </a>
@@ -247,26 +265,3 @@ if (isset($_POST['action'])) {
         </div>
     </div>
 </div>
-
-<script>
-jQuery(document).ready(function($) {
-    // Toggle full prompt display
-    $('.toggle-full-prompt').on('click', function() {
-        const templateId = $(this).data('template-id');
-        const fullPrompt = $('#full-prompt-' + templateId);
-        
-        if (fullPrompt.is(':visible')) {
-            fullPrompt.hide();
-            $(this).text('<?php esc_html_e('Show Full Prompt', 'ai-content-classifier'); ?>');
-        } else {
-            fullPrompt.show();
-            $(this).text('<?php esc_html_e('Hide Full Prompt', 'ai-content-classifier'); ?>');
-        }
-    });
-    
-    // Edit template functionality (simplified)
-    $('.edit-template').on('click', function() {
-        alert('<?php esc_html_e('Edit functionality coming soon!', 'ai-content-classifier'); ?>');
-    });
-});
-</script>

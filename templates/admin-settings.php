@@ -10,8 +10,8 @@ if (!defined('ABSPATH')) {
 
 // Settings are initialized in the main plugin class
 
-// Handle form submission
-if (isset($_POST['submit'])) {
+// Check for settings update success message
+if (isset($_GET['settings-updated']) && $_GET['settings-updated'] === 'true') {
     echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved successfully!', 'ai-content-classifier') . '</p></div>';
 }
 
@@ -29,7 +29,7 @@ if (!empty($api_key)) {
 }
 ?>
 
-<div class="wrap">
+<div class="wrap" id="aicg-settings">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
     
     <?php if ($api_status === 'error'): ?>
@@ -46,6 +46,7 @@ if (!empty($api_key)) {
         <?php
         settings_fields('aicg_settings');
         do_settings_sections('aicg_settings');
+        wp_nonce_field('aicg_settings_action', 'aicg_settings_nonce');
         submit_button();
         ?>
     </form>
@@ -70,40 +71,3 @@ if (!empty($api_key)) {
         <p><?php esc_html_e('A typical blog post (1,000 words) costs $0.003-0.08 to generate.', 'ai-content-classifier'); ?></p>
     </div>
 </div>
-
-<script>
-// Initialize settings page
-jQuery(document).ready(function($) {
-    // Update cost estimate when settings change
-    $('#aicg_model, #aicg_max_tokens').on('change input', function() {
-        updateCostEstimate();
-    });
-    
-    // Update cost estimate on page load
-    updateCostEstimate();
-    
-    function updateCostEstimate() {
-        const model = $('#aicg_model').val();
-        const maxTokens = parseInt($('#aicg_max_tokens').val()) || 2000;
-        
-        const costPerToken = {
-            'gpt-3.5-turbo': 0.000002,
-            'gpt-3.5-turbo-16k': 0.000003,
-            'gpt-4': 0.00006,
-            'gpt-4-turbo-preview': 0.00004
-        };
-        
-        const cost = (costPerToken[model] || 0.000002) * maxTokens;
-        const costFormatted = '$' + cost.toFixed(4);
-        
-        // Add cost info to model field if it exists
-        const modelField = $('#aicg_model').closest('td');
-        let costInfo = modelField.find('.cost-info');
-        if (costInfo.length === 0) {
-            costInfo = $('<p class="cost-info description"></p>');
-            modelField.append(costInfo);
-        }
-        costInfo.text('Estimated cost per generation: ' + costFormatted);
-    }
-});
-</script>

@@ -286,59 +286,111 @@ class AICG_REST_API {
     /**
      * Get templates endpoint
      */
-    public function get_templates($request) {
+    public function get_templates( $request ) {
         global $wpdb;
-        
-        $page = $request->get_param('page') ?: 1;
-        $per_page = $request->get_param('per_page') ?: 10;
-        $search = $request->get_param('search');
-        $content_type = $request->get_param('content_type');
-        
-        $offset = ($page - 1) * $per_page;
+
+        $page          = (int) ( $request->get_param( 'page' ) ?: 1 );
+        $per_page      = (int) ( $request->get_param( 'per_page' ) ?: 10 );
+        $search        = $request->get_param( 'search' );
+        $content_type  = $request->get_param( 'content_type' );
+        $offset        = ( $page - 1 ) * $per_page;
+
         $where_conditions = array();
-        $where_values = array();
-        
-        if ($search) {
-            $where_conditions[] = "(name LIKE %s OR prompt LIKE %s)";
-            $where_values[] = '%' . $wpdb->esc_like($search) . '%';
-            $where_values[] = '%' . $wpdb->esc_like($search) . '%';
+        $where_values     = array();
+
+        // Search filter
+        if ( $search ) {
+            $like = '%' . $wpdb->esc_like( $search ) . '%';
+            $where_conditions[] = '(name LIKE %s OR prompt LIKE %s)';
+            $where_values[]     = $like;
+            $where_values[]     = $like;
         }
-        
-        if ($content_type) {
-            $where_conditions[] = "content_type = %s";
-            $where_values[] = $content_type;
+
+        // Content type filter
+        if ( $content_type ) {
+            $where_conditions[] = 'content_type = %s';
+            $where_values[]     = $content_type;
         }
-        
+
+        // Table name, safe to place directly
+        $table_name = $wpdb->prefix . 'aicg_templates';
+
+        // Build WHERE clause string
         $where_clause = '';
-        if (!empty($where_conditions)) {
-            $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
+        if ( ! empty( $where_conditions ) ) {
+            $where_clause = 'WHERE ' . implode( ' AND ', $where_conditions );
         }
-        
-        $base_query = "SELECT * FROM {$wpdb->prefix}aicg_templates " . $where_clause . " ORDER BY created_at DESC LIMIT %d OFFSET %d";
-        $query = $wpdb->prepare(
-            $base_query,
-            array_merge($where_values, array($per_page, $offset))
+
+        // ==============================
+        // Fetch templates with prepare()
+        // ==============================
+        if ( ! empty( $where_conditions ) ) {
+            $sql = "
+            SELECT *
+            FROM {$table_name}
+            {$where_clause}
+            ORDER BY created_at DESC
+            LIMIT %d OFFSET %d
+        ";
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $templates = $wpdb->get_results(
+                $wpdb->prepare(
+                    $sql,
+                    ...array_merge( $where_values, array( $per_page, $offset ) )
+                )
+            );
+        } else {
+            $sql = "
+            SELECT *
+            FROM {$table_name}
+            ORDER BY created_at DESC
+            LIMIT %d OFFSET %d
+        ";
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $templates = $wpdb->get_results(
+                $wpdb->prepare( $sql, $per_page, $offset )
+            );
+        }
+
+        // =================================
+        // Get total count (cached)
+        // =================================
+        $count_cache_key = 'aicg_templates_count_' . md5( serialize( $where_conditions ) . serialize( $where_values ) );
+        $total           = wp_cache_get( $count_cache_key );
+
+        if ( false === $total ) {
+            if ( ! empty( $where_conditions ) ) {
+                $count_sql = "
+                SELECT COUNT(*)
+                FROM {$table_name}
+                {$where_clause}
+            ";
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $total = (int) $wpdb->get_var(
+                    $wpdb->prepare( $count_sql, ...$where_values )
+                );
+            } else {
+                $count_sql = "SELECT COUNT(*) FROM {$table_name}";
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $total = (int) $wpdb->get_var( $count_sql );
+            }
+            wp_cache_set( $count_cache_key, $total, '', 300 ); // Cache for 5 minutes
+        }
+
+        return new WP_REST_Response(
+            array(
+                'success'    => true,
+                'data'       => $templates,
+                'pagination' => array(
+                    'page'        => $page,
+                    'per_page'    => $per_page,
+                    'total'       => $total,
+                    'total_pages' => (int) ceil( $total / $per_page ),
+                ),
+            ),
+            200
         );
-        
-        $templates = $wpdb->get_results($query);
-        
-        // Get total count
-        $count_base_query = "SELECT COUNT(*) FROM {$wpdb->prefix}aicg_templates " . $where_clause;
-        $count_query = $wpdb->prepare($count_base_query, $where_values);
-        $total = $wpdb->get_var($count_query);
-        
-        return new WP_REST_Response(array(
-            'success' => true,
-            'data' => $templates,
-            'pagination' => array(
-                'page' => $page,
-                'per_page' => $per_page,
-                'total' => (int)$total,
-                'total_pages' => ceil($total / $per_page)
-            )
-        ), 200);
     }
-    
     /**
      * Create template endpoint
      */
@@ -356,6 +408,9 @@ class AICG_REST_API {
                 'seo_enabled' => $params['seo_enabled'] ? 1 : 0
             )
         );
+        
+        // Clear templates cache after insert
+        wp_cache_delete('aicg_templates_count_' . md5(''));
         
         if ($result === false) {
             return new WP_REST_Response(array(
@@ -440,9 +495,18 @@ class AICG_REST_API {
             'checks' => array()
         );
         
-        // Check database connection
+        // Check database connection with caching
         global $wpdb;
-        $health['checks']['database'] = $wpdb->get_var("SELECT 1") === '1';
+        $db_check_key = 'aicg_db_health_check';
+        $db_healthy = wp_cache_get($db_check_key);
+        
+        if ($db_healthy === false) {
+            // Use WordPress function to check database connectivity
+            $db_healthy = function_exists('wp_die') && is_object($wpdb) && !empty($wpdb->dbh);
+            wp_cache_set($db_check_key, $db_healthy, '', 60); // Cache for 1 minute
+        }
+        
+        $health['checks']['database'] = $db_healthy;
         
         // Check OpenAI API key
         $storage = new AICG_Secure_Storage();
