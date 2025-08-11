@@ -25,7 +25,8 @@ define('AICG_PLUGIN_BASENAME', plugin_basename(__FILE__));
 require_once AICG_PLUGIN_DIR . 'includes/class-autoloader.php';
 $aicg_autoloader = new AICG_Autoloader();
 
-// Preload critical classes
+// Preload critical classes for optimal performance
+// This reduces first-request latency by loading essential components early
 $aicg_autoloader->preload_critical_classes();
 
 // Initialize the plugin with singleton pattern
