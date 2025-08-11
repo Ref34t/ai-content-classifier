@@ -283,31 +283,34 @@ class AICG_Security {
         }
 
         if ( $user_id ) {
-            $query = $wpdb->prepare(
-                "SELECT COUNT(*) AS total_requests,
-                    SUM(tokens_used) AS total_tokens,
-                    SUM(cost) AS total_cost,
-                    AVG(tokens_used) AS avg_tokens_per_request
-             FROM {$table_name}
-             WHERE created_at >= %s
-             AND user_id = %d",
-                $date_limit,
-                $user_id
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $stats = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) AS total_requests,
+                        SUM(tokens_used) AS total_tokens,
+                        SUM(cost) AS total_cost,
+                        AVG(tokens_used) AS avg_tokens_per_request
+                 FROM {$table_name}
+                 WHERE created_at >= %s
+                 AND user_id = %d",
+                    $date_limit,
+                    $user_id
+                )
             );
         } else {
-            $query = $wpdb->prepare(
-                "SELECT COUNT(*) AS total_requests,
-                    SUM(tokens_used) AS total_tokens,
-                    SUM(cost) AS total_cost,
-                    AVG(tokens_used) AS avg_tokens_per_request
-             FROM {$table_name}
-             WHERE created_at >= %s",
-                $date_limit
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $stats = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) AS total_requests,
+                        SUM(tokens_used) AS total_tokens,
+                        SUM(cost) AS total_cost,
+                        AVG(tokens_used) AS avg_tokens_per_request
+                 FROM {$table_name}
+                 WHERE created_at >= %s",
+                    $date_limit
+                )
             );
         }
-
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $stats = $wpdb->get_row( $query );
 
         wp_cache_set( $cache_key, $stats, '', 300 );
 

@@ -231,34 +231,28 @@ class AICG_Bulk_Operations {
 
         $table_name = $wpdb->prefix . 'aicg_bulk_queue';
 
-        // Build WHERE and params
-        $where_conditions = array( "status = 'pending'", "attempts < max_attempts" );
-        $params           = array();
-
-        if ( $batch_id ) {
-            $where_conditions[] = "batch_id = %s";
-            $params[]           = $batch_id;
-        }
-
-        $where_clause = implode( ' AND ', $where_conditions );
-
         // Get pending operations (limit 10 by priority/date)
-        $sql = "
-        SELECT *
-        FROM {$table_name}
-        WHERE {$where_clause}
-        ORDER BY priority ASC, created_at ASC
-        LIMIT 10
-    ";
-
-        if ( ! empty( $params ) ) {
+        if ( $batch_id ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $operations = $wpdb->get_results(
-                $wpdb->prepare( $sql, ...$params )
+                $wpdb->prepare(
+                    "SELECT *
+                    FROM {$table_name}
+                    WHERE status = 'pending' AND attempts < max_attempts AND batch_id = %s
+                    ORDER BY priority ASC, created_at ASC
+                    LIMIT 10",
+                    $batch_id
+                )
             );
         } else {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $operations = $wpdb->get_results( $sql );
+            $operations = $wpdb->get_results(
+                "SELECT *
+                FROM {$table_name}
+                WHERE status = 'pending' AND attempts < max_attempts
+                ORDER BY priority ASC, created_at ASC
+                LIMIT 10"
+            );
         }
 
         if ( empty( $operations ) ) {
@@ -277,32 +271,24 @@ class AICG_Bulk_Operations {
             $this->process_single_operation( $operation );
         }
 
-        // ========================
         // Count remaining records
-        // ========================
-        $count_where_conditions = array( "status = 'pending'", "attempts < max_attempts" );
-        $count_params           = array();
         if ( $batch_id ) {
-            $count_where_conditions[] = "batch_id = %s";
-            $count_params[]           = $batch_id;
-        }
-
-        $count_where_clause = implode( ' AND ', $count_where_conditions );
-
-        $count_sql = "
-        SELECT COUNT(*)
-        FROM {$table_name}
-        WHERE {$count_where_clause}
-    ";
-
-        if ( ! empty( $count_params ) ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $remaining = (int) $wpdb->get_var(
-                $wpdb->prepare( $count_sql, ...$count_params )
+                $wpdb->prepare(
+                    "SELECT COUNT(*)
+                    FROM {$table_name}
+                    WHERE status = 'pending' AND attempts < max_attempts AND batch_id = %s",
+                    $batch_id
+                )
             );
         } else {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $remaining = (int) $wpdb->get_var( $count_sql );
+            $remaining = (int) $wpdb->get_var(
+                "SELECT COUNT(*)
+                FROM {$table_name}
+                WHERE status = 'pending' AND attempts < max_attempts"
+            );
         }
 
         if ( $remaining > 0 ) {

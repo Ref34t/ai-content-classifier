@@ -318,20 +318,23 @@ class AICG_REST_API {
         // Build safe SQL query with proper placeholders
         if ( ! empty( $where_conditions ) ) {
             $where_clause = 'WHERE ' . implode( ' AND ', $where_conditions );
-            $sql = $wpdb->prepare(
-                "SELECT * FROM {$table_name} {$where_clause} ORDER BY created_at DESC LIMIT %d OFFSET %d",
-                ...array_merge( $where_values, array( $per_page, $offset ) )
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $templates = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM {$table_name} {$where_clause} ORDER BY created_at DESC LIMIT %d OFFSET %d",
+                    ...array_merge( $where_values, array( $per_page, $offset ) )
+                )
             );
         } else {
-            $sql = $wpdb->prepare(
-                "SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT %d OFFSET %d",
-                $per_page,
-                $offset
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $templates = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT %d OFFSET %d",
+                    $per_page,
+                    $offset
+                )
             );
         }
-        
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $templates = $wpdb->get_results( $sql );
 
         // =================================
         // Get total count (cached)
@@ -341,15 +344,17 @@ class AICG_REST_API {
 
         if ( false === $total ) {
             if ( ! empty( $where_conditions ) ) {
-                $count_sql = $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$table_name} {$where_clause}",
-                    ...$where_values
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $total = (int) $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT COUNT(*) FROM {$table_name} {$where_clause}",
+                        ...$where_values
+                    )
                 );
             } else {
-                $count_sql = "SELECT COUNT(*) FROM {$table_name}";
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
             }
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $total = (int) $wpdb->get_var( $count_sql );
             wp_cache_set( $count_cache_key, $total, '', 300 ); // Cache for 5 minutes
         }
 
