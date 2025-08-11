@@ -12,17 +12,15 @@ git push origin feature/new-feature
 
 ## 📦 **Release to WordPress.org**
 ```bash
-# 1. Prepare release in Git
-git checkout main
-git pull origin main
-# Update version in ai-content-classifier.php
-# Update stable tag in readme.txt
-git commit -am "Bump version to 1.2.0"
-git tag v1.2.0
-git push origin main --tags
+# One command does everything:
+./auto-release.sh
 
-# 2. Release to WordPress.org (automated)
-./release-to-wordpress.sh
+# This will automatically:
+# ✅ Auto-bump patch version (+1)
+# ✅ Update all version references
+# ✅ Git commit, tag, and push
+# ✅ SVN sync, commit, and tag
+# ✅ Live on WordPress.org!
 ```
 
 ## 🔧 **Manual SVN Commands** (if needed)
@@ -56,10 +54,10 @@ svn commit -m "Tag version 1.2.0" --username mokhaled
 
 ## ✅ **Current Status**
 - ✅ Plugin live on WordPress.org
-- ✅ Version 1.1.4 tagged and released
+- ✅ Version 1.1.5 tagged and released
 - ✅ Professional assets committed
 - ✅ Git/SVN workflow established
-- ✅ Automated release script ready
+- ✅ Fully automated release system ready
 
 ## 🆘 **Emergency Rollback**
 ```bash
@@ -71,4 +69,4 @@ svn commit -m "Emergency rollback to 1.1.4" --username mokhaled
 
 ---
 
-**Next Development:** Continue in Git, release to WordPress.org when ready using `./release-to-wordpress.sh`
+**Next Development:** Continue in Git, release to WordPress.org when ready using `./auto-release.sh`
