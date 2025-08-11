@@ -1,19 +1,21 @@
-# IDE files
+# Development environment files
+.claude/
 .idea/
 .vscode/
-*.swp
-*.swo
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Temporary files
+# IDE and editor files
+*.swp
+*.swo
+*~
+
+# Logs and temporary files
+*.log
 *.tmp
 *.temp
-
-# Logs
-*.log
 
 # Plugin distribution
 ai-content-classifier.zip
