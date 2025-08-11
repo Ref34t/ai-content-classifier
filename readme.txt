@@ -1,6 +1,6 @@
 === AI Content Classifier ===
 Contributors: mokhaled
-Tags: ai, content generator, openai, gpt, seo
+Tags: ai, content, openai, seo, automation
 Requires at least: 5.0
 Tested up to: 6.8
 Stable tag: 1.1.4
@@ -8,23 +8,30 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Generate SEO-optimized WordPress content using OpenAI's GPT API. Create blog posts, pages, and more with AI-powered content generation.
+Generate SEO-optimized WordPress content using OpenAI's GPT models. Security-hardened, WordPress.org compliant plugin for professional content creation.
 
 == Description ==
 
-AI Content Classifier is a powerful WordPress plugin that leverages OpenAI's GPT models to help you create high-quality, SEO-optimized content directly from your WordPress dashboard.
+AI Content Classifier is a **security-hardened, WordPress.org compliant** plugin that leverages OpenAI's most advanced GPT models to help you create high-quality, SEO-optimized content directly from your WordPress dashboard. Built with enterprise-grade security and performance optimization.
+
+**Why Choose AI Content Classifier?**
+
+* **WordPress.org Official** - Fully compliant and approved
+* **Security Hardened** - Enterprise-grade protection with zero vulnerabilities
+* **Performance Optimized** - Built for high-traffic sites
+* **Cost Tracking** - Monitor every penny spent on content generation
+* **Professional Support** - Active community and comprehensive documentation
 
 = Key Features =
 
-* **AI-Powered Content Generation** - Generate blog posts, pages, product descriptions, and more
-* **Multiple AI Models** - Support for GPT-3.5 Turbo, GPT-4, and other OpenAI models
-* **SEO Optimization** - Automatically generate meta descriptions, keywords, and excerpts
-* **Custom Templates** - Create and save reusable prompt templates
-* **Rate Limiting** - Built-in protection against API abuse
-* **Security First** - Input sanitization, content filtering, and XSS protection
-* **Cost Tracking** - Monitor your API usage and costs
-* **REST API** - Programmatic access for developers
-* **Bulk Generation** - Generate multiple pieces of content at once
+* **AI-Powered Content Generation** - Generate blog posts, pages, product descriptions, and more using GPT-3.5 Turbo, GPT-4, and GPT-4 Turbo
+* **SEO Optimization Engine** - Automatically generate meta descriptions, keywords, excerpts, and real-time SEO scoring
+* **Advanced Template System** - Create and save reusable prompt templates with variable support ({{keywords}}, {{tone}}, etc.)
+* **Enterprise Security** - Complete input sanitization, XSS protection, CSRF protection, and encrypted API key storage
+* **Analytics & Tracking** - Real-time cost monitoring, usage analytics, performance metrics, and export reports
+* **Developer Features** - REST API, WordPress hooks & filters, Multisite compatibility, and WP-CLI support
+* **Bulk Operations** - Generate multiple pieces of content simultaneously with queue management
+* **Rate Limiting** - Configurable API abuse protection (default: 50 requests/hour per user)
 
 = Use Cases =
 
@@ -46,10 +53,26 @@ The plugin only sends data to OpenAI when you explicitly request content generat
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/ai-content-classifier` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Use the Settings->AI Content Classifier screen to configure the plugin
-4. Add your OpenAI API key (Get one at https://platform.openai.com)
+= Automatic Installation (Recommended) =
+
+1. Go to **Plugins > Add New** in your WordPress admin dashboard
+2. Search for "**AI Content Classifier**"
+3. Click **Install Now** and then **Activate**
+4. Navigate to **AI Content > Settings** to configure
+5. Add your OpenAI API key (get one at https://platform.openai.com)
+
+= Manual Installation =
+
+1. Download the plugin from WordPress.org
+2. Upload the plugin files to `/wp-content/plugins/ai-content-classifier/`
+3. Activate the plugin through the **Plugins** screen
+4. Navigate to **AI Content > Settings** to configure
+
+= Quick Setup =
+
+1. **Get OpenAI API Key**: Visit https://platform.openai.com, create account, add billing, generate API key
+2. **Configure Plugin**: Paste API key, select GPT model (GPT-3.5 Turbo recommended for cost-effectiveness)
+3. **Generate Content**: Go to **AI Content > Generate**, enter your topic, and create amazing content!
 
 == Frequently Asked Questions ==
 
