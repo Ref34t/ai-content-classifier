@@ -134,7 +134,7 @@ class AICG_Settings {
     
     public function model_field_callback() {
         $value = get_option('aicg_model', 'gpt-3.5-turbo');
-        $client = new OpenAI_Client();
+        $client = new AICG_OpenAI_Client();
         $models = $client->get_available_models();
         ?>
         <select id="aicg_model" name="aicg_model">

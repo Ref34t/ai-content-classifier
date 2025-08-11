@@ -37,7 +37,7 @@ class AI_Content_Generator {
     
     private function load_dependencies() {
         // Initialize OpenAI client
-        $this->openai_client = new OpenAI_Client();
+        $this->openai_client = new AICG_OpenAI_Client();
     }
     
     private function define_admin_hooks() {

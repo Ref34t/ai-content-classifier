@@ -20,7 +20,7 @@ class AICG_Autoloader {
         $this->class_map = array(
             // Core classes
             'AI_Content_Generator' => 'includes/class-ai-content-generator.php',
-            'OpenAI_Client' => 'includes/class-openai-client.php',
+            'AICG_OpenAI_Client' => 'includes/class-openai-client.php',
             'AICG_Security' => 'includes/class-security.php',
             'AICG_Logger' => 'includes/class-logger.php',
             'AICG_Cache' => 'includes/class-cache.php',

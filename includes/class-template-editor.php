@@ -84,6 +84,13 @@ class AICG_Template_Editor {
         $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
         $seo_enabled = isset($_POST['seo_enabled']) ? 1 : 0;
         $variables_raw = isset($_POST['variables']) ? wp_unslash($_POST['variables']) : '[]';
+        
+        // Validate JSON input
+        if (!$this->is_valid_json($variables_raw)) {
+            wp_send_json_error('Invalid JSON format for variables');
+            return;
+        }
+        
         $variables = json_decode($variables_raw, true);
         $variables = $this->sanitize_variables($variables);
         $change_log = isset($_POST['change_log']) ? sanitize_textarea_field(wp_unslash($_POST['change_log'])) : '';
@@ -190,6 +197,13 @@ class AICG_Template_Editor {
         $prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
         $content_type = isset($_POST['content_type']) ? sanitize_text_field(wp_unslash($_POST['content_type'])) : 'post';
         $variables_raw = isset($_POST['variables']) ? wp_unslash($_POST['variables']) : '[]';
+        
+        // Validate JSON input
+        if (!$this->is_valid_json($variables_raw)) {
+            wp_send_json_error('Invalid JSON format for variables');
+            return;
+        }
+        
         $variables = json_decode($variables_raw, true);
         $variables = $this->sanitize_variables($variables);
         
@@ -775,5 +789,13 @@ class AICG_Template_Editor {
         }
         
         return $sanitized;
+    }
+    
+    /**
+     * Validate JSON string
+     */
+    private function is_valid_json($string) {
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }

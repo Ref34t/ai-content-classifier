@@ -20,7 +20,7 @@ $api_key = get_option('aicg_api_key');
 $api_status = 'not-configured';
 
 if (!empty($api_key)) {
-    $client = new OpenAI_Client();
+    $client = new AICG_OpenAI_Client();
     if ($client->validate_api_key($api_key)) {
         $api_status = 'connected';
     } else {

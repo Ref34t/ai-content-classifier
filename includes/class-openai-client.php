@@ -2,7 +2,7 @@
 /**
  * OpenAI API Client
  */
-class OpenAI_Client {
+class AICG_OpenAI_Client {
     
     private $api_key;
     private $api_url = 'https://api.openai.com/v1/chat/completions';

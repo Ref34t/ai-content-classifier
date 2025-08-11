@@ -87,15 +87,21 @@ class AICG_Bulk_Operations {
             wp_die('Insufficient permissions');
         }
         
-        $operations_raw = isset($_POST['operations']) ? sanitize_textarea_field(wp_unslash($_POST['operations'])) : '[]';
+        $operations_raw = isset($_POST['operations']) ? wp_unslash($_POST['operations']) : '[]';
+        
+        // Validate JSON input
+        if (!$this->is_valid_json($operations_raw)) {
+            wp_send_json_error('Invalid JSON format for operations');
+            return;
+        }
+        
         $operations = json_decode($operations_raw, true);
+        $operations = $this->sanitize_operations($operations);
 
         if (!is_array($operations) || empty($operations)) {
             wp_send_json_error('Invalid operations data');
+            return;
         }
-
-        // Sanitize operations array after JSON decode
-        $operations = $this->sanitize_operations($operations);
 
         if (count($operations) > 50) {
             wp_send_json_error('Maximum 50 operations allowed per batch');
@@ -674,5 +680,13 @@ class AICG_Bulk_Operations {
         }
         
         return $sanitized;
+    }
+    
+    /**
+     * Validate JSON string
+     */
+    private function is_valid_json($string) {
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }
