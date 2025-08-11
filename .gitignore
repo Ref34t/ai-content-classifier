@@ -1,0 +1,71 @@
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+*.log
+
+# Plugin distribution
+ai-content-classifier.zip
+
+# Development notes (prevent accidental commits)
+WORDPRESS_PLUGIN_DEVELOPMENT_GUIDE.md
+
+# WordPress.org SVN repository (separate from Git)
+ai-content-classifier-svn/
+*-svn/
+
+# Build and dependency directories
+node_modules/
+vendor/
+dist/
+build/
+
+# Environment and configuration files
+.env
+.env.local
+.env.production
+config.local.php
+
+# Composer
+composer.phar
+composer.lock
+
+# NPM
+package-lock.json
+npm-debug.log
+yarn-error.log
+
+# WordPress
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+
+# Assets source files (design files)
+assets-source/
+*.psd
+*.ai
+*.sketch
+*.fig
+
+# Testing
+coverage/
+.phpunit.result.cache
+phpunit.xml
+tests/_output/
+
+# Documentation that shouldn't be in production
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+DEVELOPMENT.md
