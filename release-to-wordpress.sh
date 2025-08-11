@@ -69,7 +69,11 @@ fi
 EXCLUDE_LIST=(
     '.git'
     '.github'
+    '.claude'
+    '.idea'
+    '.vscode'
     'node_modules'
+    'vendor'
     '.gitignore'
     '.gitattributes'
     'composer.json'
@@ -89,10 +93,18 @@ EXCLUDE_LIST=(
     'README.md'
     'CHANGELOG.md'
     'CONTRIBUTING.md'
+    'GIT-SVN-WORKFLOW.md'
+    'QUICK-REFERENCE.md'
     'phpunit.xml'
     'phpcs.xml'
     'tests'
     'docs'
+    '*.swp'
+    '*.swo'
+    '*.tmp'
+    '*.temp'
+    'ai-content-classifier-svn'
+    '*.md'
 )
 
 # Build rsync exclude arguments
