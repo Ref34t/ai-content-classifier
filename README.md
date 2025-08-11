@@ -2,7 +2,7 @@
 
 > **Generate SEO-optimized WordPress content using OpenAI's GPT models. Create blog posts, pages, and more with AI-powered content generation.**
 
-[![WordPress Plugin Version](https://img.shields.io/badge/version-1.1.4-blue.svg)](https://wordpress.org/plugins/ai-content-classifier)
+[![WordPress Plugin Version](https://img.shields.io/badge/version-1.1.5-blue.svg)](https://wordpress.org/plugins/ai-content-classifier)
 [![WordPress.org Plugin](https://img.shields.io/badge/WordPress.org-live-green.svg)](https://wordpress.org/plugins/ai-content-classifier)
 [![WordPress Compatibility](https://img.shields.io/badge/wordpress-5.0%2B-green.svg)](https://wordpress.org/)
 [![PHP Version](https://img.shields.io/badge/php-7.4%2B-purple.svg)](https://php.net/)
