@@ -54,7 +54,6 @@ The plugin only sends data to OpenAI when you explicitly request content generat
 == Installation ==
 
 = Automatic Installation (Recommended) =
-
 1. Go to **Plugins > Add New** in your WordPress admin dashboard
 2. Search for "**AI Content Classifier**"
 3. Click **Install Now** and then **Activate**
