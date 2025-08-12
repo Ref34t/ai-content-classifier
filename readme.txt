@@ -8,7 +8,7 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Generate SEO-optimized WordPress content using OpenAI's GPT models. Security-hardened, WordPress.org compliant plugin for professional content creation.
+Generate SEO-optimized WordPress content using OpenAI's GPT models. Security-hardened plugin for professional content creation.
 
 == Description ==
 
@@ -170,8 +170,8 @@ Yes, the plugin is compatible with WordPress Multisite installations.
 
 == Upgrade Notice ==
 
-= 1.0.0 =
-First release of AI Content Classifier plugin.
+= 1.1.5 =
+Latest release with enhanced performance documentation and automated release workflow.
 
 == Privacy Policy ==
 
